@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import carPhoto from './assets/red.webp'
 import './App.css'
+import { Analytics } from "@vercel/analytics/react"
 
 const GREETINGS = [
   'Hello', 'Hola', 'Bonjour', 'Ciao', 'नमस्ते', 'Hallo', 'Salaam', 'Olá',
@@ -216,6 +217,7 @@ export default function App() {
           ))}
         </div>
       </div>
+      <Analytics />
     </div>
   )
 }
