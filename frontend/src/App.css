@@ -1,0 +1,458 @@
+/* ─── Reset & Base ─────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #090b10;
+  --ink: #f0ede8;
+  --ink-faint: rgba(240, 237, 232, 0.08);
+  --ink-mid: rgba(240, 237, 232, 0.45);
+  --accent: #ef6b46;
+  --signal-red: #d62939;
+  --signal-green: #2ecf74;
+  --mono: "DM Mono", "Courier New", monospace;
+  --serif: "Playfair Display", Georgia, serif;
+  --sans: "DM Sans", system-ui, sans-serif;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Custom easing for launch — explosive initial burst, smooth tail */
+  --ease-launch: cubic-bezier(0.55, 0, 0.1, 1);
+  /* Drive-in: smooth deceleration, soft settle */
+  --ease-arrive: cubic-bezier(0.16, 1, 0.24, 1);
+}
+
+html, body, #root {
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Intro Screen ──────────────────────────────────── */
+.intro-screen {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 58%, rgba(255,255,255,0.022) 0%, transparent 55%),
+    linear-gradient(180deg, #0b1018 0%, #090b10 100%);
+  overflow: hidden;
+}
+
+/* ── Race stage ── */
+.race-stage {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s var(--ease);
+}
+.race-stage.active { opacity: 1; }
+
+/* ── Signal lights ── */
+.race-signals {
+  position: absolute;
+  top: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 9px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(10, 13, 20, 0.55);
+  backdrop-filter: blur(6px);
+  z-index: 10;
+  transition: box-shadow 0.3s;
+}
+.signal-light {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: background 0.18s, box-shadow 0.18s;
+}
+
+/* Red: lights on one by one with stagger */
+.race-signals.red .signal-light {
+  background: rgba(214, 41, 57, 0.9);
+  box-shadow: 0 0 7px 1px rgba(214, 41, 57, 0.28);
+}
+.race-signals.red .signal-light:nth-child(1) { animation: light-on 0.14s 0.00s both; }
+.race-signals.red .signal-light:nth-child(2) { animation: light-on 0.14s 0.12s both; }
+.race-signals.red .signal-light:nth-child(3) { animation: light-on 0.14s 0.24s both; }
+.race-signals.red .signal-light:nth-child(4) { animation: light-on 0.14s 0.36s both; }
+.race-signals.red .signal-light:nth-child(5) { animation: light-on 0.14s 0.48s both; }
+
+@keyframes light-on {
+  from { opacity: 0; transform: scale(0.5); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Blink: brief flash before green (rev state) */
+.race-signals.blink .signal-light {
+  background: rgba(214, 41, 57, 0.9);
+  box-shadow: 0 0 7px 1px rgba(214, 41, 57, 0.28);
+  animation: signal-blink 0.1s ease-in-out 2 alternate;
+}
+
+@keyframes signal-blink {
+  to {
+    background: rgba(255,255,255,0.07);
+    box-shadow: none;
+  }
+}
+
+/* Green: all lights off → snap green */
+.race-signals.green .signal-light {
+  background: var(--signal-green);
+  box-shadow: 0 0 10px 2px rgba(46, 207, 116, 0.3);
+  animation: green-flash 0.22s var(--ease-out) both;
+}
+.race-signals.green .signal-light:nth-child(1) { animation-delay: 0.00s; }
+.race-signals.green .signal-light:nth-child(2) { animation-delay: 0.03s; }
+.race-signals.green .signal-light:nth-child(3) { animation-delay: 0.06s; }
+.race-signals.green .signal-light:nth-child(4) { animation-delay: 0.09s; }
+.race-signals.green .signal-light:nth-child(5) { animation-delay: 0.12s; }
+
+@keyframes green-flash {
+  0%   { opacity: 0; transform: scale(0.7); }
+  60%  { opacity: 1; transform: scale(1.22); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* ── Horizon line ── */
+.race-horizon {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255,0.038) 18%,
+    rgba(255,255,255,0.038) 82%,
+    transparent 100%
+  );
+}
+
+/* ── Ground / track surface ── */
+.track-surface {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255,0.018) 15%,
+    rgba(255,255,255,0.018) 85%,
+    transparent 100%
+  );
+  margin-top: 28px; /* below horizon, roughly wheel-level */
+}
+
+/* ── Speed lines ── */
+.speed-lines {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.race-stage.is-launch .speed-lines { opacity: 0.65; }
+
+.speed-lines::before,
+.speed-lines::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0,
+    transparent 52px,
+    rgba(255,255,255,0.032) 52px,
+    rgba(255,255,255,0.032) 88px
+  );
+  animation: speed-scroll 0.28s linear infinite;
+}
+.speed-lines::before { top: calc(50% - 38px); }
+.speed-lines::after  { top: calc(50% + 38px); }
+
+@keyframes speed-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-88px); }
+}
+
+/* ── F1 Car ── */
+.f1-car-wrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(360px, 72vw);
+  will-change: transform;
+  transform-origin: center center;
+}
+
+/* Idle: off-screen left, no transition */
+.f1-car-wrap.idle {
+  transform: translateX(calc(-100vw - 50%)) translateY(-50%);
+  transition: none;
+}
+
+/* Drive-in: glide in from left, ease to rest */
+.f1-car-wrap.drive-in {
+  transform: translateX(-50%) translateY(-50%);
+  transition: transform 1.05s var(--ease-arrive);
+}
+
+/* Rev: tiny forward lurch — engine builds */
+.f1-car-wrap.rev {
+  transform: translateX(calc(-50% + 6px)) translateY(-50%) scale(1.012);
+  transition: transform 0.18s ease-in;
+}
+
+/* Launch: explosive exit to the right */
+.f1-car-wrap.launch {
+  transform: translateX(calc(100vw + 60%)) translateY(-50%) scaleX(0.96);
+  transition: transform 0.82s var(--ease-launch);
+}
+
+/* Tilt on launch — car nose dips slightly then rockets */
+.f1-car-wrap.launch .car-photo {
+  animation: car-launch-tilt 0.82s var(--ease-launch) both;
+}
+
+@keyframes car-launch-tilt {
+  0%   { transform: rotate(0deg); }
+  8%   { transform: rotate(1.5deg); }
+  100% { transform: rotate(-0.6deg); }
+}
+
+.car-photo {
+  width: 100%;
+  display: block;
+  filter: drop-shadow(0 10px 22px rgba(0,0,0,0.35));
+  transition: filter 0.3s;
+}
+
+/* ── Heat haze under car ── */
+.heat-haze {
+  position: absolute;
+  bottom: -4px;
+  left: 12%;
+  right: 12%;
+  height: 10px;
+  background: radial-gradient(
+    ellipse at 50% 100%,
+    rgba(239, 107, 70, 0.08) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+/* ── Wheel blur indicator ── */
+.wheel-blur {
+  position: absolute;
+  bottom: 2px;
+  left: 8%;
+  right: 8%;
+  height: 6px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0,
+    transparent 14%,
+    rgba(255,255,255,0.04) 14%,
+    rgba(255,255,255,0.04) 16%,
+    transparent 16%
+  );
+}
+.wheel-blur.spinning {
+  opacity: 1;
+  animation: wheel-spin 0.12s linear infinite;
+}
+
+@keyframes wheel-spin {
+  from { background-position: 0 0; }
+  to   { background-position: 18px 0; }
+}
+
+/* ── Exhaust / acceleration glow ── */
+.exhaust-glow {
+  position: absolute;
+  top: 50%;
+  width: 110px;
+  height: 36px;
+  border-radius: 50%;
+  transform: translate(-110%, -50%);
+  background: radial-gradient(
+    ellipse,
+    rgba(239, 107, 70, 0.28) 0%,
+    rgba(239, 107, 70, 0.06) 50%,
+    transparent 70%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.exhaust-glow.visible { opacity: 1; }
+
+/* ── Exhaust word stage ── */
+.exhaust-stage {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.exhaust-word {
+  position: absolute;
+  font-family: var(--serif);
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 18px rgba(0,0,0,0.18);
+  transform: translateX(var(--settle-x, -50%)) translateY(var(--settle-y, -50%)) scale(1);
+  text-align: center;
+  display: inline-flex;
+  gap: 0.01em;
+}
+
+.exhaust-word.hold {
+  animation: greeting-hold-in var(--hold-dur, 0.48s) var(--ease-out) both;
+}
+
+.exhaust-word.reveal {
+  animation: greeting-first-reveal 0.78s var(--ease-out) both;
+}
+
+/* Per-character reveal */
+.greeting-char {
+  display: inline-block;
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+.exhaust-word.reveal .greeting-char {
+  opacity: 0;
+  transform: translateY(0.22em) scale(0.94);
+  filter: blur(2px);
+  animation: char-reveal var(--char-duration, 360ms) var(--ease-out) forwards;
+  animation-delay: calc(
+    var(--char-start-delay, 0ms) + var(--char-index) * var(--char-step, 80ms)
+  );
+}
+
+@keyframes char-reveal {
+  0%   { opacity: 0; transform: translateY(0.22em) scale(0.94); filter: blur(2px); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+@keyframes greeting-first-reveal {
+  0%   {
+    opacity: 0;
+    transform: translateX(var(--settle-x,-50%)) translateY(calc(var(--settle-y,-50%) + 12px)) scale(0.94);
+    filter: blur(5px);
+  }
+  55%  {
+    opacity: 1;
+    transform: translateX(var(--settle-x,-50%)) translateY(calc(var(--settle-y,-50%) + 0.5px)) scale(1.006);
+    filter: blur(0.4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(var(--settle-x,-50%)) translateY(var(--settle-y,-50%)) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes greeting-hold-in {
+  0%   {
+    opacity: 0;
+    transform: translateX(var(--settle-x,-50%)) translateY(calc(var(--settle-y,-50%) + 8px)) scale(0.97);
+    filter: blur(3px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(var(--settle-x,-50%)) translateY(var(--settle-y,-50%)) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* ─── Main page ─────────────────────────────────────── */
+.main-page {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  background: var(--bg);
+}
+
+.hero-card {
+  max-width: 580px;
+  width: 100%;
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 14px;
+  padding: clamp(1.2rem, 2.6vw, 1.8rem);
+  background: rgba(10, 12, 18, 0.58);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.2);
+}
+
+@keyframes hero-in {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-kicker {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-mid);
+  margin-bottom: 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  animation: hero-in 1s var(--ease) 0.05s both;
+}
+.hero-kicker::before {
+  content: "";
+  display: inline-block;
+  width: 22px;
+  height: 1px;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+.hero-card h1 {
+  font-family: var(--serif);
+  font-size: clamp(2.8rem, 7vw, 5.4rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.04;
+  color: var(--ink);
+  margin-bottom: 1.4rem;
+  animation: hero-in 1s var(--ease) 0.15s both;
+}
+
+.hero-card p {
+  font-size: 1rem;
+  line-height: 1.72;
+  color: var(--ink-mid);
+  max-width: 42ch;
+  animation: hero-in 1s var(--ease) 0.26s both;
+}
