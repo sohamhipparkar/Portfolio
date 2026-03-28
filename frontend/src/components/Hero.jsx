@@ -104,7 +104,7 @@ function StarCanvas() {
 }
 
 /* ── Glitch Text ─────────────────────────────────────────────────── */
-function GlitchName({ children }) {
+function GlitchName({ children, 'data-text': dataText }) {
   const [glitching, setGlitching] = useState(false)
 
   useEffect(() => {
@@ -112,12 +112,16 @@ function GlitchName({ children }) {
       setGlitching(true)
       setTimeout(() => setGlitching(false), 400)
     }
-    const id = setInterval(trigger, 5000)
+    const id = setInterval(trigger, 4000)
     return () => clearInterval(id)
   }, [])
 
   return (
-    <span style={{ position: 'relative', display: 'inline-block' }} className={glitching ? 'glitch-active' : ''}>
+    <span
+      data-text={dataText || children}
+      style={{ position: 'relative', display: 'inline-block' }}
+      className={glitching ? 'glitch-active' : ''}
+    >
       {children}
     </span>
   )
@@ -151,6 +155,8 @@ function Counter({ target, suffix = '' }) {
 /* ── Magnetic Button ─────────────────────────────────────────────── */
 function MagneticBtn({ children, style, onClick, href, as = 'button', className }) {
   const btnRef = useRef(null)
+  const [pressed, setPressed] = useState(false)
+  const [hovered, setHovered] = useState(false)
 
   const handleMove = (e) => {
     const btn = btnRef.current
@@ -158,24 +164,119 @@ function MagneticBtn({ children, style, onClick, href, as = 'button', className 
     const rect = btn.getBoundingClientRect()
     const x = e.clientX - rect.left - rect.width / 2
     const y = e.clientY - rect.top - rect.height / 2
-    btn.style.transform = `translate(${x * 0.18}px, ${y * 0.18}px)`
+    btn.style.transform = `translate(${x * 0.18}px, ${y * 0.18}px) scale(${pressed ? 0.96 : 1.04})`
   }
 
   const handleLeave = () => {
-    if (btnRef.current) btnRef.current.style.transform = 'translate(0,0)'
+    setHovered(false)
+    if (btnRef.current) btnRef.current.style.transform = 'translate(0,0) scale(1)'
   }
+
+  const handleEnter = () => setHovered(true)
 
   const props = {
     ref: btnRef,
-    style: { ...style, transition: 'transform 0.25s cubic-bezier(0.23,1,0.32,1), background 0.2s, color 0.2s, border-color 0.2s' },
+    style: {
+      ...style,
+      transition: 'transform 0.3s cubic-bezier(0.23,1,0.32,1), background 0.25s, color 0.25s, border-color 0.25s, box-shadow 0.3s',
+    },
     onMouseMove: handleMove,
     onMouseLeave: handleLeave,
+    onMouseEnter: handleEnter,
+    onMouseDown: () => { setPressed(true); if (btnRef.current) btnRef.current.style.transform = 'translate(0,0) scale(0.96)' },
+    onMouseUp: () => { setPressed(false) },
     className,
     onClick,
   }
 
   if (as === 'a') return <a href={href} target="_blank" rel="noreferrer" {...props}>{children}</a>
   return <button {...props}>{children}</button>
+}
+
+/* ── Reveal on scroll ────────────────────────────────────────────── */
+function Reveal({ children, delay = 0, style = {} }) {
+  const ref = useRef(null)
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { setVisible(true); observer.disconnect() }
+    }, { threshold: 0.15 })
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(22px)',
+        transition: `opacity 0.7s cubic-bezier(0.16,1,0.3,1) ${delay}s, transform 0.7s cubic-bezier(0.16,1,0.3,1) ${delay}s`,
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  )
+}
+
+/* ── Cursor Trail ────────────────────────────────────────────────── */
+function CursorTrail() {
+  const canvasRef = useRef(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    let raf
+    const trail = []
+    const MAX = 18
+
+    const resize = () => {
+      canvas.width = window.innerWidth
+      canvas.height = window.innerHeight
+    }
+    resize()
+    window.addEventListener('resize', resize)
+
+    const onMove = (e) => {
+      trail.push({ x: e.clientX, y: e.clientY, a: 1 })
+      if (trail.length > MAX) trail.shift()
+    }
+    window.addEventListener('mousemove', onMove)
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      for (let i = 1; i < trail.length; i++) {
+        const t = trail[i]
+        const prev = trail[i - 1]
+        const alpha = (i / MAX) * 0.18
+        ctx.beginPath()
+        ctx.moveTo(prev.x, prev.y)
+        ctx.lineTo(t.x, t.y)
+        ctx.strokeStyle = `rgba(232,0,45,${alpha})`
+        ctx.lineWidth = (i / MAX) * 2.5
+        ctx.lineCap = 'round'
+        ctx.stroke()
+      }
+      raf = requestAnimationFrame(draw)
+    }
+    draw()
+
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('resize', resize)
+      window.removeEventListener('mousemove', onMove)
+    }
+  }, [])
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999 }}
+    />
+  )
 }
 
 /* ── useIsMobile hook ────────────────────────────────────────────── */
@@ -194,29 +295,33 @@ function useIsMobile(breakpoint = 640) {
 /* ── Hero ────────────────────────────────────────────────────────── */
 export default function Hero({ onViewWork, onContact, resumeLink = '#' }) {
   const [roleIndex, setRoleIndex] = useState(0)
-  const [roleVisible, setRoleVisible] = useState(true)
+  const [rolePhase, setRolePhase] = useState('idle') // idle | out | in
   const [mounted, setMounted] = useState(false)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+  const [hoverBtn, setHoverBtn] = useState(null)
   const sectionRef = useRef(null)
   const isMobile = useIsMobile(640)
 
+  // ── Mount fade-in ──
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 80)
     return () => clearTimeout(t)
   }, [])
 
+  // ── Role cycling with smooth out→in phases ──
   useEffect(() => {
     const id = setInterval(() => {
-      setRoleVisible(false)
+      setRolePhase('out')
       setTimeout(() => {
         setRoleIndex(i => (i + 1) % ROLES.length)
-        setRoleVisible(true)
-      }, 350)
-    }, 2600)
+        setRolePhase('in')
+        setTimeout(() => setRolePhase('idle'), 500)
+      }, 380)
+    }, 2800)
     return () => clearInterval(id)
   }, [])
 
-  // Parallax only on desktop
+  // ── Parallax mouse ──
   useEffect(() => {
     if (isMobile) return
     const handleMouse = (e) => {
@@ -229,38 +334,60 @@ export default function Hero({ onViewWork, onContact, resumeLink = '#' }) {
 
   const go = id => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
 
+  const roleStyle = {
+    idle: { opacity: 1, transform: 'translateY(0) skewY(0deg)', filter: 'blur(0px)' },
+    out:  { opacity: 0, transform: 'translateY(-14px) skewY(-2deg)', filter: 'blur(4px)' },
+    in:   { opacity: 1, transform: 'translateY(0) skewY(0deg)', filter: 'blur(0px)' },
+  }
+
   return (
     <>
+      {!isMobile && <CursorTrail />}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,700;0,900;1,900&family=Share+Tech+Mono&display=swap');
 
-        @keyframes blink       { 0%,100%{opacity:1} 50%{opacity:0.15} }
-        @keyframes roleUp      { from{opacity:0;transform:translateY(16px) skewY(3deg)} to{opacity:1;transform:translateY(0) skewY(0)} }
-        @keyframes roleDown    { to{opacity:0;transform:translateY(-16px) skewY(-3deg)} }
-        @keyframes scrollBall  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
-        @keyframes nebula      { 0%,100%{opacity:.55;transform:scale(1) rotate(0deg)} 50%{opacity:1;transform:scale(1.07) rotate(4deg)} }
-        @keyframes heroIn      { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes scanline    { 0%{transform:translateY(-100%)} 100%{transform:translateY(200vh)} }
-        @keyframes glitch1     { 0%,100%{clip-path:inset(0 0 100% 0)} 20%{clip-path:inset(33% 0 55% 0);transform:translateX(-4px)} 40%{clip-path:inset(70% 0 10% 0);transform:translateX(4px)} 60%{clip-path:inset(10% 0 80% 0);transform:translateX(-2px)} 80%{clip-path:inset(60% 0 30% 0);transform:translateX(3px)} }
-        @keyframes glitch2     { 0%,100%{clip-path:inset(0 0 100% 0)} 20%{clip-path:inset(60% 0 20% 0);transform:translateX(4px)} 40%{clip-path:inset(10% 0 70% 0);transform:translateX(-4px)} 60%{clip-path:inset(80% 0 5% 0);transform:translateX(2px)} 80%{clip-path:inset(25% 0 65% 0);transform:translateX(-3px)} }
-        @keyframes pulseRing   { 0%{transform:scale(1);opacity:0.6} 100%{transform:scale(2.2);opacity:0} }
-        @keyframes shimmer     { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
-        @keyframes gridReveal  { from{opacity:0} to{opacity:1} }
-        @keyframes borderRace  { 0%{background-position:0% 0%} 100%{background-position:300% 0%} }
-        @keyframes counterGlow { 0%,100%{text-shadow:none} 50%{text-shadow:0 0 20px rgba(232,0,45,0.8)} }
+        /* ── Core keyframes ── */
+        @keyframes blink        { 0%,100%{opacity:1}        50%{opacity:0.15} }
+        @keyframes scrollBall   { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
+        @keyframes nebula       { 0%,100%{opacity:.55;transform:scale(1) rotate(0deg)} 50%{opacity:1;transform:scale(1.07) rotate(4deg)} }
+        @keyframes shimmer      { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+        @keyframes gridReveal   { from{opacity:0} to{opacity:1} }
+        @keyframes pulseRing    { 0%{transform:scale(1);opacity:0.6} 100%{transform:scale(2.4);opacity:0} }
+        @keyframes counterGlow  { 0%,100%{text-shadow:none} 50%{text-shadow:0 0 20px rgba(232,0,45,0.8)} }
+        @keyframes scanline     { 0%{transform:translateY(-100%)} 100%{transform:translateY(200vh)} }
+        @keyframes glitch1      { 0%,100%{clip-path:inset(0 0 100% 0)} 20%{clip-path:inset(33% 0 55% 0);transform:translateX(-4px)} 40%{clip-path:inset(70% 0 10% 0);transform:translateX(4px)} 60%{clip-path:inset(10% 0 80% 0);transform:translateX(-2px)} 80%{clip-path:inset(60% 0 30% 0);transform:translateX(3px)} }
+        @keyframes glitch2      { 0%,100%{clip-path:inset(0 0 100% 0)} 20%{clip-path:inset(60% 0 20% 0);transform:translateX(4px)} 40%{clip-path:inset(10% 0 70% 0);transform:translateX(-4px)} 60%{clip-path:inset(80% 0 5% 0);transform:translateX(2px)} 80%{clip-path:inset(25% 0 65% 0);transform:translateX(-3px)} }
 
-        .hero-role-in   { animation: roleUp   0.45s cubic-bezier(0.16,1,0.3,1) both }
-        .hero-role-out  { animation: roleDown 0.35s ease-in forwards }
+        /* ── NEW: staggered hero entrance ── */
+        @keyframes heroSlideUp  { from{opacity:0;transform:translateY(36px) skewY(1.5deg)} to{opacity:1;transform:translateY(0) skewY(0)} }
+        @keyframes heroFadeIn   { from{opacity:0} to{opacity:1} }
+        @keyframes stripeExpand { from{transform:scaleX(0);transform-origin:left} to{transform:scaleX(1);transform-origin:left} }
+        @keyframes lineGrow     { from{width:0;opacity:0} to{width:100%;opacity:0.4} }
+        @keyframes floatY       { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+        @keyframes borderRace   { 0%{background-position:0% 0%} 100%{background-position:300% 0%} }
 
-        .hero-d0 { animation: heroIn 0.9s cubic-bezier(0.16,1,0.3,1) 0.0s  both }
-        .hero-d1 { animation: heroIn 0.9s cubic-bezier(0.16,1,0.3,1) 0.12s both }
-        .hero-d2 { animation: heroIn 0.9s cubic-bezier(0.16,1,0.3,1) 0.24s both }
-        .hero-d3 { animation: heroIn 0.9s cubic-bezier(0.16,1,0.3,1) 0.38s both }
-        .hero-d4 { animation: heroIn 0.9s cubic-bezier(0.16,1,0.3,1) 0.55s both }
-        .hero-d5 { animation: heroIn 0.9s cubic-bezier(0.16,1,0.3,1) 0.70s both }
+        /* ── Checker reveal ── */
+        @keyframes checkerIn    { from{opacity:0;transform:scaleX(0)} to{opacity:0.2;transform:scaleX(1)} }
 
+        /* ── Ghost number slow float ── */
+        @keyframes ghostFloat   { 0%,100%{transform:translateY(-58%) translateX(0)} 50%{transform:translateY(-60%) translateX(-6px)} }
+
+        /* ── Stagger delays ── */
+        .hd0 { animation: heroSlideUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.05s both }
+        .hd1 { animation: heroSlideUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.16s both }
+        .hd2 { animation: heroSlideUp 1.0s cubic-bezier(0.16,1,0.3,1) 0.28s both }
+        .hd3 { animation: heroSlideUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.42s both }
+        .hd4 { animation: heroSlideUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.58s both }
+        .hd5 { animation: heroSlideUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.72s both }
+        .hd6 { animation: heroFadeIn  1.1s ease               0.90s both }
+
+        /* ── Checker strip ── */
+        .checker-strip { animation: checkerIn 0.7s cubic-bezier(0.16,1,0.3,1) 0.05s both; transform-origin: left }
+
+        /* ── Clip-path button ── */
         .hero-btn-primary { clip-path: polygon(9px 0%, 100% 0%, calc(100% - 9px) 100%, 0% 100%) }
 
+        /* ── Glitch ── */
         .glitch-active::before,
         .glitch-active::after {
           content: attr(data-text);
@@ -270,44 +397,73 @@ export default function Hero({ onViewWork, onContact, resumeLink = '#' }) {
         .glitch-active::before { animation: glitch1 0.4s steps(1) both }
         .glitch-active::after  { color: #38bdf8; animation: glitch2 0.4s steps(1) both }
 
+        /* ── Telemetry hover ── */
         .telemetry-item {
           position: relative;
           cursor: default;
-          transition: transform 0.2s;
+          transition: transform 0.25s cubic-bezier(0.23,1,0.32,1);
         }
-        .telemetry-item:hover { transform: translateY(-3px) }
+        .telemetry-item::after {
+          content: '';
+          position: absolute;
+          bottom: -4px; left: 0;
+          width: 0; height: 1px;
+          background: #E8002D;
+          transition: width 0.3s cubic-bezier(0.16,1,0.3,1);
+        }
+        .telemetry-item:hover { transform: translateY(-4px) }
+        .telemetry-item:hover::after { width: 100% }
         .telemetry-item:hover .telemetry-val { color: #fff !important }
         .telemetry-item:hover .telemetry-val.green { color: #6ee77a !important; text-shadow: 0 0 12px rgba(57,211,83,0.6) }
+        .telemetry-lbl { transition: color 0.2s, letter-spacing 0.3s }
+        .telemetry-item:hover .telemetry-lbl { color: #888 !important; letter-spacing: 0.26em }
 
+        /* ── Primary button shimmer on hover ── */
         .hero-btn-primary:hover .btn-shimmer {
-          animation: shimmer 0.6s linear;
+          animation: shimmer 0.55s linear;
+        }
+        /* ── Primary button glow ── */
+        .hero-btn-primary {
+          transition: box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.23,1,0.32,1) !important;
+        }
+        .hero-btn-primary:hover {
+          box-shadow: 0 0 28px rgba(232,0,45,0.45), 0 0 6px rgba(232,0,45,0.2) !important;
+        }
+        .hero-btn-primary:active {
+          box-shadow: 0 0 12px rgba(232,0,45,0.3) !important;
         }
 
-        .scanline-effect {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(transparent 50%, rgba(0,0,0,0.03) 50%);
-          background-size: 100% 4px;
-          pointer-events: none;
-          z-index: 1;
-          opacity: 0.4;
-        }
-
-        .stat-val-animate {
-          animation: counterGlow 3s ease-in-out infinite;
-        }
-
+        /* ── Secondary (resume) button border race ── */
+        .border-race-btn { position: relative; overflow: hidden }
         .border-race-btn::before {
           content: '';
           position: absolute;
           inset: -1px;
-          background: linear-gradient(90deg, transparent, #E8002D, transparent);
-          background-size: 200% 100%;
-          animation: borderRace 1.5s linear infinite;
+          background: linear-gradient(90deg, transparent, #E8002D, #38bdf8, transparent);
+          background-size: 300% 100%;
+          animation: borderRace 1.8s linear infinite;
           opacity: 0;
-          transition: opacity 0.3s;
+          transition: opacity 0.35s;
+          z-index: 0;
         }
+        .border-race-btn > * { position: relative; z-index: 1 }
         .border-race-btn:hover::before { opacity: 1 }
+        .border-race-btn:hover {
+          color: #fff !important;
+          border-color: transparent !important;
+        }
+
+        /* ── Scroll hint float ── */
+        .scroll-hint { animation: heroFadeIn 1s ease 1.3s both }
+        .scroll-hint:hover .scroll-mouse { border-color: #E8002D !important; box-shadow: 0 0 12px rgba(232,0,45,0.3) }
+
+        /* ── Stat counter glow ── */
+        .stat-val-animate { animation: counterGlow 3s ease-in-out infinite }
+
+        /* ── Ghost number passive float (desktop only) ── */
+        @media (min-width: 640px) {
+          .ghost-num-wrap { animation: ghostFloat 9s ease-in-out infinite }
+        }
 
         /* ── Mobile overrides ── */
         @media (max-width: 639px) {
@@ -327,24 +483,28 @@ export default function Hero({ onViewWork, onContact, resumeLink = '#' }) {
         ref={sectionRef}
         style={{
           position: 'relative',
-          minHeight: '100dvh',          /* dvh for mobile chrome toolbar */
+          minHeight: '100dvh',
           overflow: 'hidden',
           background: '#0b0b0b',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: isMobile ? 'center' : 'flex-end',
-          /* Responsive padding: tight on mobile, generous on desktop */
           padding: isMobile ? '80px 20px 40px' : '0 48px 60px',
           opacity: mounted ? 1 : 0,
-          transition: 'opacity 0.4s ease',
+          transition: 'opacity 0.5s ease',
           boxSizing: 'border-box',
         }}
       >
         {/* Stars */}
         <StarCanvas />
 
-        {/* Scanline */}
-        <div className="scanline-effect" />
+        {/* Scanline grid */}
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none',
+          background: 'linear-gradient(transparent 50%, rgba(0,0,0,0.03) 50%)',
+          backgroundSize: '100% 4px',
+          opacity: 0.4,
+        }} />
 
         {/* Scanline sweep */}
         <div style={{ position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none', overflow: 'hidden' }}>
@@ -363,30 +523,39 @@ export default function Hero({ onViewWork, onContact, resumeLink = '#' }) {
           WebkitMaskImage: 'radial-gradient(ellipse 85% 85% at 50% 50%,black 20%,transparent 100%)',
           maskImage: 'radial-gradient(ellipse 85% 85% at 50% 50%,black 20%,transparent 100%)',
           transform: `translate(${mousePos.x * -6}px, ${mousePos.y * -6}px)`,
-          transition: 'transform 0.8s cubic-bezier(0.23,1,0.32,1)',
+          transition: 'transform 0.9s cubic-bezier(0.23,1,0.32,1)',
           animation: 'gridReveal 1.5s ease 0.2s both',
         }} />
 
-        {/* Red glow */}
+        {/* Red glow — parallax */}
         <div style={{
           position: 'absolute', bottom: -100, left: -80, zIndex: 2, pointerEvents: 'none',
           width: isMobile ? 320 : 700, height: isMobile ? 260 : 500,
           background: 'radial-gradient(ellipse,rgba(232,0,45,0.13) 0%,transparent 70%)',
           transform: `translate(${mousePos.x * 12}px, ${mousePos.y * 12}px)`,
-          transition: 'transform 1.2s cubic-bezier(0.23,1,0.32,1)',
+          transition: 'transform 1.3s cubic-bezier(0.23,1,0.32,1)',
         }} />
 
-        {/* Nebula bloom — top right */}
+        {/* Blue accent glow — opposite parallax */}
+        <div style={{
+          position: 'absolute', top: '20%', right: '10%', zIndex: 2, pointerEvents: 'none',
+          width: isMobile ? 160 : 320, height: isMobile ? 160 : 320,
+          background: 'radial-gradient(ellipse,rgba(56,189,248,0.05) 0%,transparent 70%)',
+          transform: `translate(${mousePos.x * -10}px, ${mousePos.y * -10}px)`,
+          transition: 'transform 1.5s cubic-bezier(0.23,1,0.32,1)',
+        }} />
+
+        {/* Nebula — top right */}
         <div className="hero-nebula-tr" style={{
           position: 'absolute', top: 60, right: 100, zIndex: 2, pointerEvents: 'none',
           width: 380, height: 380, borderRadius: '50%',
           background: 'radial-gradient(ellipse at 40% 40%,rgba(56,189,248,0.09) 0%,rgba(232,0,45,0.05) 50%,transparent 70%)',
           animation: 'nebula 6s ease-in-out infinite',
           transform: `translate(${mousePos.x * -18}px, ${mousePos.y * -18}px)`,
-          transition: 'transform 1.5s cubic-bezier(0.23,1,0.32,1)',
+          transition: 'transform 1.6s cubic-bezier(0.23,1,0.32,1)',
         }} />
 
-        {/* Second nebula — hidden on mobile via class */}
+        {/* Nebula — mid */}
         <div className="hero-nebula-mid" style={{
           position: 'absolute', top: '30%', left: '20%', zIndex: 2, pointerEvents: 'none',
           width: 200, height: 200, borderRadius: '50%',
@@ -396,36 +565,41 @@ export default function Hero({ onViewWork, onContact, resumeLink = '#' }) {
           transition: 'transform 1s cubic-bezier(0.23,1,0.32,1)',
         }} />
 
-        {/* Right stripe */}
+        {/* Right stripe — animated reveal */}
         <div style={{
           position: 'absolute', top: 0, right: 0, zIndex: 2, pointerEvents: 'none',
           width: 3, height: '100%',
           background: 'linear-gradient(to bottom,transparent,#E8002D 30%,#E8002D 70%,transparent)',
           opacity: 0.55,
           transformOrigin: 'top',
-          animation: 'heroIn 1s cubic-bezier(0.16,1,0.3,1) 0.1s both',
+          animation: 'heroFadeIn 1s ease 0.1s both',
         }} />
 
-        {/* Top stripe */}
+        {/* Top stripe — expanding */}
         <div style={{
           position: 'absolute', top: 0, left: 0, zIndex: 2, pointerEvents: 'none',
           height: 2, width: '40%',
           background: 'linear-gradient(to right,#E8002D,transparent)',
           opacity: 0.4,
-          animation: 'heroIn 1s cubic-bezier(0.16,1,0.3,1) 0.3s both',
+          transformOrigin: 'left',
+          animation: 'stripeExpand 0.9s cubic-bezier(0.16,1,0.3,1) 0.3s both',
         }} />
 
-        {/* Ghost driver number — hidden on mobile via class */}
-        <div className="hero-ghost-num" style={{
-          position: 'absolute', right: 72, top: '50%',
-          transform: `translateY(-58%) translate(${mousePos.x * 15}px, ${mousePos.y * 10}px)`,
-          zIndex: 2, pointerEvents: 'none', userSelect: 'none',
-          fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 900,
-          fontSize: 'clamp(9rem,19vw,19rem)', letterSpacing: '-0.04em', lineHeight: 1,
-          color: 'rgba(255,255,255,0.028)',
-          transition: 'transform 1.2s cubic-bezier(0.23,1,0.32,1)',
-          animation: 'heroIn 1.2s cubic-bezier(0.16,1,0.3,1) 0.05s both',
-        }}>
+        {/* Ghost driver number */}
+        <div
+          className="hero-ghost-num ghost-num-wrap"
+          style={{
+            position: 'absolute', right: 72,
+            top: '50%',
+            /* parallax applied inline, float animation via class */
+            transform: `translateY(-58%) translate(${mousePos.x * 15}px, ${mousePos.y * 10}px)`,
+            zIndex: 2, pointerEvents: 'none', userSelect: 'none',
+            fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 900,
+            fontSize: 'clamp(9rem,19vw,19rem)', letterSpacing: '-0.04em', lineHeight: 1,
+            color: 'rgba(255,255,255,0.028)',
+            transition: 'transform 1.3s cubic-bezier(0.23,1,0.32,1)',
+            animation: 'heroFadeIn 1.4s ease 0.3s both',
+          }}>
           01
         </div>
 
@@ -433,14 +607,14 @@ export default function Hero({ onViewWork, onContact, resumeLink = '#' }) {
         <div style={{ position: 'relative', zIndex: 10 }}>
 
           {/* Checker strip */}
-          <div className="hero-d0" style={{
-            width: 44, height: 7, marginBottom: 18, opacity: 0.2,
+          <div className="checker-strip" style={{
+            width: 44, height: 7, marginBottom: 18,
             backgroundImage: 'repeating-conic-gradient(#fff 0% 25%,transparent 0% 50%)',
             backgroundSize: '7px 7px',
           }} />
 
           {/* Status line */}
-          <div className="hero-d1" style={{
+          <div className="hd1" style={{
             fontFamily: "'Share Tech Mono',monospace", fontSize: '0.6rem',
             letterSpacing: '0.22em', textTransform: 'uppercase', color: '#E8002D',
             display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18,
@@ -459,14 +633,14 @@ export default function Hero({ onViewWork, onContact, resumeLink = '#' }) {
             Full-Stack Developer · Available for hire
           </div>
 
-          {/* Cycling role */}
+          {/* Cycling role — now CSS-transition driven */}
           <div style={{ minHeight: 28, marginBottom: 8, overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
             <span
-              key={roleIndex}
-              className={roleVisible ? 'hero-role-in' : 'hero-role-out'}
               style={{
                 fontFamily: "'Share Tech Mono',monospace", fontSize: '0.75rem',
                 letterSpacing: '0.18em', textTransform: 'uppercase', color: '#666',
+                transition: 'opacity 0.38s cubic-bezier(0.4,0,0.2,1), transform 0.38s cubic-bezier(0.4,0,0.2,1), filter 0.38s ease',
+                ...roleStyle[rolePhase],
               }}
             >
               {ROLES[roleIndex]}
@@ -474,9 +648,8 @@ export default function Hero({ onViewWork, onContact, resumeLink = '#' }) {
           </div>
 
           {/* Name */}
-          <h1 className="hero-d2" style={{
+          <h1 className="hd2" style={{
             fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 900, fontStyle: 'italic',
-            /* clamp floor raised slightly so it's readable on narrow phones */
             fontSize: 'clamp(3.8rem,12vw,10rem)', lineHeight: 0.88,
             letterSpacing: '-0.01em', textTransform: 'uppercase',
             color: '#fff', marginBottom: 20, position: 'relative',
@@ -492,25 +665,28 @@ export default function Hero({ onViewWork, onContact, resumeLink = '#' }) {
                 height: 3, width: '100%',
                 background: 'linear-gradient(to right, #E8002D, rgba(232,0,45,0.3))',
                 transformOrigin: 'left',
-                animation: 'heroIn 0.8s cubic-bezier(0.16,1,0.3,1) 0.5s both',
+                animation: 'stripeExpand 0.9s cubic-bezier(0.16,1,0.3,1) 0.6s both',
               }} />
             </span>
           </h1>
 
-          {/* Telemetry row — wraps on mobile */}
-          <div className="hero-d3" style={{
+          {/* Telemetry row */}
+          <div className="hd3" style={{
             display: 'flex',
-            flexWrap: 'wrap',           /* wrap on narrow screens */
+            flexWrap: 'wrap',
             gap: isMobile ? '16px 20px' : '28px',
             marginBottom: isMobile ? 28 : 44,
             padding: '14px 0',
             borderTop: '1px solid rgba(255,255,255,0.10)',
             position: 'relative',
           }}>
+            {/* Animated underline */}
             <div style={{
               position: 'absolute', bottom: 0, left: 0, height: 1,
               background: 'linear-gradient(to right, #E8002D 0%, rgba(232,0,45,0.3) 40%, transparent 70%)',
-              width: '60%', opacity: 0.4,
+              opacity: 0,
+              animation: 'lineGrow 0.9s cubic-bezier(0.16,1,0.3,1) 0.55s forwards',
+              width: '60%',
             }} />
 
             {[
@@ -524,18 +700,16 @@ export default function Hero({ onViewWork, onContact, resumeLink = '#' }) {
                 className="telemetry-item"
                 style={{
                   display: 'flex', flexDirection: 'column', gap: 3,
-                  animation: `heroIn 0.7s cubic-bezier(0.16,1,0.3,1) ${0.38 + i * 0.08}s both`,
-                  /* min-width keeps items from squishing weirdly */
+                  animation: `heroSlideUp 0.7s cubic-bezier(0.16,1,0.3,1) ${0.42 + i * 0.09}s both`,
                   minWidth: 60,
                 }}
               >
-                <span style={{
+                <span className="telemetry-lbl" style={{
                   fontFamily: "'Share Tech Mono',monospace", fontSize: '0.52rem',
                   letterSpacing: '0.2em', textTransform: 'uppercase', color: '#444',
-                  transition: 'color 0.2s',
                 }}>{t.lbl}</span>
                 <span
-                  className={`telemetry-val${t.green ? ' green' : ''}`}
+                  className={`telemetry-val${t.green ? ' green stat-val-animate' : ''}`}
                   style={{
                     fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700,
                     fontSize: '1rem', color: t.green ? '#39d353' : '#c8c8c8',
@@ -551,9 +725,9 @@ export default function Hero({ onViewWork, onContact, resumeLink = '#' }) {
             ))}
           </div>
 
-          {/* Bottom row — stacks on mobile */}
+          {/* Bottom row */}
           <div
-            className="hero-d5 hero-bottom-row"
+            className="hd5 hero-bottom-row"
             style={{
               display: 'flex',
               alignItems: isMobile ? 'flex-start' : 'flex-end',
@@ -583,7 +757,7 @@ export default function Hero({ onViewWork, onContact, resumeLink = '#' }) {
               — from pixel-perfect interfaces to resilient backends. Every millisecond matters.
             </p>
 
-            {/* Button row — stacks + full-width on mobile */}
+            {/* Button row */}
             <div
               className="hero-btn-row"
               style={{
@@ -610,11 +784,11 @@ export default function Hero({ onViewWork, onContact, resumeLink = '#' }) {
               >
                 <span className="btn-shimmer" style={{
                   position: 'absolute', inset: 0,
-                  background: 'linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.15) 50%,transparent 100%)',
+                  background: 'linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.18) 50%,transparent 100%)',
                   backgroundSize: '200% 100%',
                   pointerEvents: 'none',
                 }} />
-                View Work <ArrowUpRight size={12} />
+                View Work <ArrowUpRight size={12} style={{ transition: 'transform 0.25s', transform: 'translate(0,0)' }} />
               </MagneticBtn>
 
               <MagneticBtn
@@ -640,26 +814,28 @@ export default function Hero({ onViewWork, onContact, resumeLink = '#' }) {
         </div>
 
         {/* Scroll hint */}
-        <div style={{
-          position: 'absolute', bottom: isMobile ? 12 : 20, left: '50%', transform: 'translateX(-50%)',
-          zIndex: 20, display: 'flex', flexDirection: 'column', alignItems: 'center',
-          gap: 6, cursor: 'pointer',
-          animation: 'heroIn 1s cubic-bezier(0.16,1,0.3,1) 1.1s both',
-        }}
+        <div
+          className="scroll-hint"
+          style={{
+            position: 'absolute', bottom: isMobile ? 12 : 20, left: '50%', transform: 'translateX(-50%)',
+            zIndex: 20, display: 'flex', flexDirection: 'column', alignItems: 'center',
+            gap: 6, cursor: 'pointer',
+          }}
           onClick={() => go('about')}
         >
           <span style={{
             fontFamily: "'Share Tech Mono',monospace", fontSize: '0.45rem',
             letterSpacing: '0.25em', color: '#333', textTransform: 'uppercase',
             marginBottom: 4,
+            transition: 'color 0.3s, letter-spacing 0.3s',
           }}>scroll</span>
-          <div style={{
-            width: 18, height: 28, border: '1px solid #2a2a2a', borderRadius: 9,
-            display: 'flex', justifyContent: 'center', paddingTop: 5,
-            transition: 'border-color 0.3s',
-          }}
-            onMouseEnter={e => e.currentTarget.style.borderColor = '#E8002D'}
-            onMouseLeave={e => e.currentTarget.style.borderColor = '#2a2a2a'}
+          <div
+            className="scroll-mouse"
+            style={{
+              width: 18, height: 28, border: '1px solid #2a2a2a', borderRadius: 9,
+              display: 'flex', justifyContent: 'center', paddingTop: 5,
+              transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
+            }}
           >
             <div style={{
               width: 2, height: 5, background: '#444', borderRadius: 1,
