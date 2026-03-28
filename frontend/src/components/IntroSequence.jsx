@@ -598,6 +598,21 @@ export default function IntroSequence({ MainComponent = MainPortfolioPage }) {
           color: rgba(200,10,10,0.6);
           text-shadow: 0 0 20px rgba(255,0,0,0.3);
         }
+
+        /* ── MOBILE ADJUSTMENTS ── */
+        @media (max-width: 480px) {
+          .signal-panel {
+            top: clamp(52px, 10vh, 72px);
+          }
+
+          .intro-wordmark {
+            left: clamp(32px, 8vw, 56px);
+          }
+
+          .gear-indicator {
+            right: clamp(32px, 8vw, 56px);
+          }
+        }
       `}</style>
 
       <div className="intro-screen" aria-live="polite">
