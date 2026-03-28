@@ -98,11 +98,7 @@ export default function Navbar() {
       if (menuRef.current && !menuRef.current.contains(e.target)) setMobileOpen(false)
     }
     document.addEventListener('mousedown', handler)
-    document.addEventListener('touchstart', handler)        // FIX: also handle touch
-    return () => {
-      document.removeEventListener('mousedown', handler)
-      document.removeEventListener('touchstart', handler)
-    }
+    return () => document.removeEventListener('mousedown', handler)
   }, [mobileOpen])
 
   /* lock body scroll when mobile menu is open */
@@ -140,7 +136,8 @@ export default function Navbar() {
         .nav-root {
           position: fixed;
           top: 0; left: 0; right: 0;
-          z-index: 9999;                               /* FIX: was 50, bumped high so nothing overlaps it */
+          z-index: 50;
+          pointer-events: auto;
           animation: navDrop 0.65s cubic-bezier(0.16,1,0.3,1) 0.05s both;
         }
 
@@ -204,6 +201,7 @@ export default function Navbar() {
           text-decoration: none; cursor: pointer;
           position: relative; z-index: 1;
           animation: logoIn 0.7s cubic-bezier(0.16,1,0.3,1) 0.2s both;
+          /* Generous tap target on mobile */
           padding: 8px 0;
           flex-shrink: 0;
         }
@@ -343,12 +341,10 @@ export default function Navbar() {
         .nav-hamburger {
           display: none; flex-direction: column; gap: 5px;
           background: none; border: none; cursor: pointer;
-          padding: 10px 6px;
-          position: relative;
-          z-index: 10;                                /* FIX: raised so it's never hidden behind other layers */
+          padding: 10px 6px; /* larger tap target */
+          position: relative; z-index: 2;
           flex-shrink: 0;
           -webkit-tap-highlight-color: transparent;
-          touch-action: manipulation;                 /* FIX: removes 300ms tap delay on iOS/Android */
         }
         .nav-hamburger-line {
           display: block; height: 1.5px; background: #666;
@@ -357,7 +353,6 @@ export default function Navbar() {
             opacity    0.25s,
             background 0.25s,
             width      0.35s cubic-bezier(0.23,1,0.32,1);
-          pointer-events: none;                       /* FIX: lines shouldn't capture their own events */
         }
         .nav-hamburger:hover .nav-hamburger-line { background: #E8002D; }
         .nav-hamburger-line:nth-child(1) { width: 22px; }
@@ -376,10 +371,11 @@ export default function Navbar() {
           padding: 6px 0 20px;
           transform-origin: top;
           animation: mobileIn 0.3s cubic-bezier(0.23,1,0.32,1) both;
-          max-height: calc(100vh - 56px);
+          overflow: hidden;
+          /* Cap height on short viewports and scroll if needed */
+          max-height: calc(100vh - 60px);
           overflow-y: auto;
           -webkit-overflow-scrolling: touch;
-          z-index: 9998;                              /* FIX: explicit stacking below nav-root but above page */
         }
         .nav-mobile::before {
           content: '';
@@ -391,7 +387,7 @@ export default function Navbar() {
 
         .nav-mobile-link {
           display: flex; align-items: center; gap: 16px;
-          padding: 14px 24px;
+          padding: 14px 24px; /* bigger tap target */
           text-decoration: none; cursor: pointer;
           border-left: 2px solid transparent;
           position: relative; overflow: hidden;
@@ -399,8 +395,7 @@ export default function Navbar() {
           animation: itemIn 0.35s cubic-bezier(0.23,1,0.32,1) both;
           transition: background 0.25s, border-color 0.25s;
           -webkit-tap-highlight-color: transparent;
-          touch-action: manipulation;                 /* FIX: removes 300ms tap delay */
-          min-height: 48px;
+          min-height: 48px; /* WCAG touch target */
         }
         .nav-mobile-link::after {
           content: '';
@@ -431,7 +426,6 @@ export default function Navbar() {
           font-size: 1.4rem; text-transform: uppercase;
           letter-spacing: 0.04em; color: #444;
           transition: color 0.25s, letter-spacing 0.3s;
-          pointer-events: none;                       /* FIX: let clicks pass through to parent <a> */
         }
         .nav-mobile-link:hover .nav-mobile-label,
         .nav-mobile-link:active .nav-mobile-label { color:#fff; letter-spacing:0.08em; }
@@ -443,7 +437,6 @@ export default function Navbar() {
           font-size: 0.7rem; color: #252525;
           transition: color 0.25s, transform 0.35s cubic-bezier(0.23,1,0.32,1);
           flex-shrink: 0;
-          pointer-events: none;                       /* FIX: let clicks pass through to parent <a> */
         }
         .nav-mobile-link:hover .nav-mobile-arrow,
         .nav-mobile-link:active .nav-mobile-arrow { color:#E8002D; transform:translateX(5px); }
@@ -469,39 +462,41 @@ export default function Navbar() {
 
         /* Large desktop: full layout */
         @media (min-width: 1025px) {
-          .nav-status    { display: flex; }
-          .nav-links     { display: flex; }
-          .nav-hamburger { display: none; }
-          .nav-logo-text { display: flex; }
-          /* FIX: removed `display: none !important` on .nav-mobile here — 
-             we rely on {mobileOpen && ...} in JSX instead; the !important
-             was fighting React's conditional render on some mobile browsers */
+          .nav-status   { display: flex; }
+          .nav-links    { display: flex; }
+          .nav-hamburger{ display: none; }
+          .nav-logo-text{ display: flex; }
+          .nav-mobile   { display: none !important; }
         }
 
         /* Tablet: hide status pill, show links */
         @media (min-width: 769px) and (max-width: 1024px) {
-          .nav-strip     { padding: 0 24px; }
-          .nav-status    { display: none; }
-          .nav-links     { display: flex; gap: 2px; }
-          .nav-hamburger { display: none; }
-          .nav-logo-text { display: flex; }
-          .nav-link      { padding: 6px 10px; }
+          .nav-strip    { padding: 0 24px; }
+          .nav-status   { display: none; }
+          .nav-links    { display: flex; gap: 2px; }
+          .nav-hamburger{ display: none; }
+          .nav-logo-text{ display: flex; }
+          .nav-mobile   { display: none !important; }
+          /* Tighten link padding at tablet size */
+          .nav-link     { padding: 6px 10px; }
           .nav-link-label { font-size: 0.8rem; }
         }
 
         /* Mobile: hamburger only */
         @media (max-width: 768px) {
-          .nav-strip     { padding: 0 16px; height: 56px; }
-          .nav-links     { display: none; }
-          .nav-status    { display: none; }
-          .nav-hamburger { display: flex; }
-          .nav-logo-text { display: none; }
-          .nav-logo-wrap { gap: 0; }
+          .nav-strip    { padding: 0 16px; height: 56px; }
+          .nav-links    { display: none; }
+          .nav-status   { display: none; }
+          .nav-hamburger{ display: flex; }
+          .nav-logo-text{ display: none; }
+          /* Keep logo image visible but compensate for hidden text */
+          .nav-logo-wrap{ gap: 0; }
+          .nav-mobile   { /* visible when mobileOpen */ }
         }
 
         /* Very small phones */
         @media (max-width: 360px) {
-          .nav-strip  { padding: 0 12px; }
+          .nav-strip    { padding: 0 12px; }
           .nav-logo-img { width: 32px; height: 32px; }
         }
       `}</style>
