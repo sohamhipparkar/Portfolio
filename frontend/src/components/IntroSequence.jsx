@@ -408,7 +408,6 @@ export default function IntroSequence({ MainComponent = MainPortfolioPage }) {
         .speed-line {
           position: absolute;
           height: 1px;
-          /* Lines originate from the right and streak leftward */
           right: 0;
           background: linear-gradient(to left, transparent, rgba(255,255,255,0.6), transparent);
           transform-origin: right center;
@@ -430,7 +429,6 @@ export default function IntroSequence({ MainComponent = MainPortfolioPage }) {
           z-index: 6;
         }
 
-        /* Keep car orientation consistent (facing right) */
         .car-photo {
           width: 100%;
           display: block;
@@ -438,7 +436,6 @@ export default function IntroSequence({ MainComponent = MainPortfolioPage }) {
           filter: drop-shadow(0 8px 30px rgba(200,10,10,0.35)) drop-shadow(0 0 60px rgba(150,0,0,0.2));
         }
 
-        /* Drive-in: car enters from the LEFT side */
         .f1-car-wrap.idle {
           transform: translateX(-130vw);
           transition: none;
@@ -460,7 +457,6 @@ export default function IntroSequence({ MainComponent = MainPortfolioPage }) {
           to   { transform: translateX(calc(-50% + 2px)) translateY(1px) rotate(0.3deg); }
         }
 
-        /* Launch: car blasts off to the RIGHT */
         .f1-car-wrap.launch {
           animation: car-launch 0.55s cubic-bezier(0.55, 0, 1, 0.45) forwards;
         }
@@ -471,7 +467,6 @@ export default function IntroSequence({ MainComponent = MainPortfolioPage }) {
           100% { transform: translateX(200vw) scaleX(1.3); filter: blur(12px) brightness(2.5); }
         }
 
-        /* Ground glow under car */
         .car-ground-glow {
           position: absolute;
           bottom: -8px;
@@ -636,7 +631,7 @@ export default function IntroSequence({ MainComponent = MainPortfolioPage }) {
             </div>
           </div>
 
-          {/* Speed Lines - stream right -> left */}
+          {/* Speed Lines */}
           <div className="speed-lines">
             {[...Array(14)].map((_, i) => (
               <div
@@ -652,7 +647,7 @@ export default function IntroSequence({ MainComponent = MainPortfolioPage }) {
             ))}
           </div>
 
-          {/* Car — enters from left, launches to right */}
+          {/* Car */}
           <div className={`f1-car-wrap ${carClass}`}>
             <div className="car-ground-glow" />
             <img className="car-photo" src={carPhoto} alt="Formula 1 car" />
@@ -683,7 +678,7 @@ export default function IntroSequence({ MainComponent = MainPortfolioPage }) {
                   <span
                     key={`${id}-c${i}`}
                     className="greeting-char"
-                    style={{ '--char-index': i }}
+                    style={{ '--char-index': i, whiteSpace: 'pre' }}
                   >
                     {char}
                   </span>
