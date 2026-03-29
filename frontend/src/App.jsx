@@ -45,7 +45,7 @@ const projects = [
     title: 'DSA Tracker',
     desc: 'Real-time progress tracker for data structures and algorithms practice, with interactive visualizations.',
     tags: ['React', 'Zustand', 'DnD Kit', 'Node.js'],
-    github: 'https://github.com/sohamhipparkar/DSA-Trackerr',       
+    github: 'https://github.com/sohamhipparkar/DSA-Tracker',       
     live: 'https://soham-dsa-tracker.vercel.app/',                
   },
   {
@@ -56,6 +56,24 @@ const projects = [
     tags: ['React', 'Tailwind', 'Framer Motion'],
     github: 'https://github.com/sohamhipparkar/GlobeMart',          
     live: 'https://globe-mart-wine.vercel.app/',                     
+  },
+  {
+    num: '05',
+    featured: false,
+    title: 'Chat App',
+    desc: 'Real-time chat application with user authentication, private messaging, and group chats.',
+    tags: ['React', 'Tailwind', 'Framer Motion'],
+    github: 'https://github.com/sohamhipparkar/Chat',          
+    live: null,                     
+  },
+  {
+    num: '06',
+    featured: false,
+    title: 'Portfolio Website',
+    desc: 'Personal portfolio showcasing projects, skills, and experience with a modern F1-inspired design.',
+    tags: ['React', 'Tailwind', 'Framer Motion'],
+    github: 'https://github.com/sohamhipparkar/Portfolio',          
+    live: 'https://soham-hipparkar.vercel.app/',                     
   },
 ]
 
