@@ -127,6 +127,11 @@ const styles = `
   /* ── SPACER ── */
   .nav-spacer { flex: 1; }
 
+  /* Center toggle is mobile-only */
+  .nav-center-toggle {
+    display: none;
+  }
+
   /* ── NAV LINKS ── */
   .nav-links {
     display: flex;
@@ -287,6 +292,161 @@ const styles = `
   }
   .f1-nav.scrolled .nav-telemetry { opacity: 0.35; }
 
+  /* ── MOBILE NAV TOGGLE ── */
+  @media (max-width: 900px) {
+    .f1-nav {
+      padding: 0 0.9rem;
+      gap: 0.9rem;
+    }
+
+    .f1-nav::after {
+      left: 0.9rem;
+      right: 0.9rem;
+    }
+
+    .nav-spacer {
+      display: none;
+    }
+
+    .nav-center-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      height: 32px;
+      padding: 0 0.85rem;
+      border: 1px solid var(--chrome-faint);
+      border-radius: 999px;
+      background: rgba(17, 17, 22, 0.75);
+      color: var(--chrome);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      cursor: pointer;
+      z-index: 3;
+      transition: border-color 0.25s ease, color 0.25s ease, background 0.25s ease;
+    }
+
+    .nav-center-toggle:hover,
+    .nav-center-toggle:focus-visible {
+      border-color: var(--f1-red);
+      color: var(--white);
+      background: rgba(17, 17, 22, 0.92);
+      outline: none;
+    }
+
+    .nav-center-toggle::after {
+      content: '▾';
+      margin-left: 0.45rem;
+      color: var(--f1-red);
+      transform: translateY(-1px);
+      transition: transform 0.25s var(--transition-snap);
+    }
+
+    .f1-nav.mobile-open .nav-center-toggle::after {
+      transform: rotate(180deg) translateY(1px);
+    }
+
+    .nav-pit {
+      margin-left: auto;
+      height: 32px;
+      padding: 0 1rem;
+      font-size: 0.53rem;
+      letter-spacing: 0.12em;
+    }
+
+    .nav-links {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) translateY(-10px);
+      width: min(92vw, 360px);
+      flex-direction: column;
+      gap: 0.2rem;
+      padding: 0.45rem;
+      border: 1px solid var(--chrome-faint);
+      border-radius: 8px;
+      background: rgba(10, 10, 12, 0.95);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s var(--transition-snap), visibility 0.25s;
+      z-index: 2;
+    }
+
+    .f1-nav.mobile-open .nav-links {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .nav-links li {
+      width: 100%;
+      opacity: 1;
+      transform: none;
+      animation: none;
+    }
+
+    .nav-links a {
+      width: 100%;
+      justify-content: flex-start;
+      padding: 0.58rem 0.72rem;
+      font-size: 0.62rem;
+      letter-spacing: 0.11em;
+    }
+
+    .nav-telemetry {
+      display: none;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .f1-nav {
+      padding: 0 0.55rem;
+      gap: 0.6rem;
+    }
+
+    .f1-nav::after {
+      left: 0.55rem;
+      right: 0.55rem;
+    }
+
+    .nav-logo-wrap img {
+      width: 34px;
+      height: 34px;
+    }
+
+    .nav-center-toggle {
+      height: 30px;
+      padding: 0 0.7rem;
+      font-size: 0.52rem;
+    }
+
+    .nav-pit {
+      height: 30px;
+      padding: 0 0.8rem;
+      font-size: 0.49rem;
+      letter-spacing: 0.1em;
+    }
+
+    .nav-links {
+      width: calc(100vw - 1.1rem);
+    }
+
+    .nav-links a {
+      padding: 0.52rem 0.65rem;
+      font-size: 0.58rem;
+      letter-spacing: 0.09em;
+    }
+  }
+
   /* ── DEMO SCAFFOLD ── */
   .demo-wrap {
     padding: 6rem 2rem 2rem;
@@ -304,7 +464,8 @@ export default function PortfolioNav({ scrollY: scrollYProp, onNavigate, logoImg
   const [scrollY, setScrollY] = useState(scrollYProp ?? 0);
   const [active, setActive]   = useState(null);
   const [tick, setTick]       = useState("LAP 01 · 1:23.456 · PIT WINDOW OPEN · DRS ENABLED");
-  const rafRef = useRef(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navRef = useRef(null);
 
   // If no external scrollY prop, track internally
   useEffect(() => {
@@ -327,16 +488,44 @@ export default function PortfolioNav({ scrollY: scrollYProp, onNavigate, logoImg
     return () => clearInterval(id);
   }, []);
 
+  useEffect(() => {
+    const onResize = () => {
+      if (window.innerWidth > 900) setIsMobileMenuOpen(false);
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+
+    const onPointerDown = (event) => {
+      if (!navRef.current?.contains(event.target)) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("touchstart", onPointerDown);
+
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("touchstart", onPointerDown);
+    };
+  }, [isMobileMenuOpen]);
+
   const isScrolled = (scrollYProp ?? scrollY) > 60;
 
   const navigate = (section) => {
     setActive(section);
+    setIsMobileMenuOpen(false);
     if (onNavigate) onNavigate(section);
   };
 
   const goHome = (e) => {
     e.preventDefault();
     setActive(null);
+    setIsMobileMenuOpen(false);
     const el = document.getElementById("home");
     if (el) { navigate("home"); return; }
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -346,7 +535,10 @@ export default function PortfolioNav({ scrollY: scrollYProp, onNavigate, logoImg
     <>
       <style>{styles}</style>
 
-      <nav className={`f1-nav${isScrolled ? " scrolled" : ""}`}>
+      <nav
+        ref={navRef}
+        className={`f1-nav${isScrolled ? " scrolled" : ""}${isMobileMenuOpen ? " mobile-open" : ""}`}
+      >
 
         {/* LOGO */}
         <a href="#home" className="nav-logo-wrap" onClick={goHome} aria-label="Go to top">
@@ -365,8 +557,18 @@ export default function PortfolioNav({ scrollY: scrollYProp, onNavigate, logoImg
 
         <div className="nav-spacer" />
 
+        <button
+          type="button"
+          className="nav-center-toggle"
+          aria-expanded={isMobileMenuOpen}
+          aria-controls="portfolio-nav-links"
+          onClick={() => setIsMobileMenuOpen((open) => !open)}
+        >
+          Menu
+        </button>
+
         {/* LINKS */}
-        <ul className="nav-links">
+        <ul className="nav-links" id="portfolio-nav-links">
           {sections.map((section, i) => (
             <li key={section}>
               <a
