@@ -1,39 +1,394 @@
-export default function PortfolioNav({ scrollY, onNavigate, logoImg }) {
-  const sections = ['about', 'work', 'projects', 'contact']
+import { useEffect, useRef, useState } from "react";
 
-  const goHome = (event) => {
-    event.preventDefault()
-    const homeEl = document.getElementById('home')
-    if (homeEl) {
-      onNavigate('home')
-      return
-    }
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+const styles = `
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap');
+
+  :root {
+    --f1-red: #E8002D;
+    --f1-red-dim: rgba(232, 0, 45, 0.15);
+    --f1-red-glow: rgba(232, 0, 45, 0.4);
+    --carbon: #0A0A0C;
+    --carbon-mid: #111116;
+    --carbon-light: #1A1A22;
+    --chrome: #C8C8D4;
+    --chrome-dim: rgba(200, 200, 212, 0.4);
+    --chrome-faint: rgba(200, 200, 212, 0.08);
+    --white: #F0F0F8;
+    --nav-height: 64px;
+    --transition-snap: cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--carbon);
+    min-height: 200vh;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ── NAV SHELL ── */
+  .f1-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    height: var(--nav-height);
+    display: flex;
+    align-items: center;
+    padding: 0 2rem;
+    gap: 2rem;
+
+    /* Base: fully transparent */
+    background: transparent;
+    border-bottom: 1px solid transparent;
+    transition:
+      background 0.5s var(--transition-snap),
+      border-color 0.5s var(--transition-snap),
+      backdrop-filter 0.5s var(--transition-snap);
+  }
+
+  /* Speed-stripe at top — expands on scroll */
+  .f1-nav::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--f1-red) 40%, #FF6B00 70%, transparent 100%);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.6s var(--transition-snap);
+  }
+
+  /* Bottom hairline that appears on scroll */
+  .f1-nav::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 2rem; right: 2rem;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--chrome-dim), transparent);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .f1-nav.scrolled {
+    background: rgba(10, 10, 12, 0.85);
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    border-bottom-color: var(--chrome-faint);
+  }
+  .f1-nav.scrolled::before { transform: scaleX(1); }
+  .f1-nav.scrolled::after  { opacity: 1; }
+
+  /* ── LOGO ── */
+  .nav-logo-wrap {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    position: relative;
+  }
+
+  .nav-logo-wrap img {
+    width: 40px; height: 40px;
+    object-fit: contain;
+    position: relative;
+    z-index: 1;
+    transition: transform 0.4s var(--transition-bounce), filter 0.3s ease;
+    filter: drop-shadow(0 0 0px var(--f1-red));
+  }
+
+  /* Spinning ring behind logo on hover */
+  .nav-logo-wrap::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 1.5px solid transparent;
+    border-top-color: var(--f1-red);
+    border-right-color: var(--f1-red);
+    transform: rotate(0deg);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
+  .nav-logo-wrap:hover img {
+    transform: scale(1.1) rotate(-5deg);
+    filter: drop-shadow(0 0 12px var(--f1-red-glow));
+  }
+  .nav-logo-wrap:hover::before {
+    opacity: 1;
+    animation: spin-ring 1.2s linear infinite;
+  }
+
+  @keyframes spin-ring {
+    to { transform: rotate(360deg); }
+  }
+
+  /* ── SPACER ── */
+  .nav-spacer { flex: 1; }
+
+  /* ── NAV LINKS ── */
+  .nav-links {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    gap: 0.25rem;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .nav-links li {
+    position: relative;
+    /* Stagger entrance on mount */
+    opacity: 0;
+    transform: translateY(-8px);
+    animation: link-enter 0.5s var(--transition-snap) forwards;
+  }
+  .nav-links li:nth-child(1) { animation-delay: 0.08s; }
+  .nav-links li:nth-child(2) { animation-delay: 0.16s; }
+  .nav-links li:nth-child(3) { animation-delay: 0.24s; }
+  .nav-links li:nth-child(4) { animation-delay: 0.32s; }
+
+  @keyframes link-enter {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .nav-links a {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.45rem 0.9rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--chrome-dim);
+    text-decoration: none;
+    border-radius: 2px;
+    position: relative;
+    transition: color 0.25s ease;
+    overflow: hidden;
+  }
+
+  /* Section index counter */
+  .nav-links a .link-index {
+    font-size: 0.55rem;
+    color: var(--f1-red);
+    opacity: 0.6;
+    transition: opacity 0.25s ease;
+  }
+
+  /* Hover fill sweep */
+  .nav-links a::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--chrome-faint);
+    transform: translateX(-101%);
+    transition: transform 0.3s var(--transition-snap);
+    border-radius: 2px;
+  }
+
+  /* Active underline */
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0.9rem; right: 0.9rem;
+    height: 1.5px;
+    background: var(--f1-red);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s var(--transition-snap);
+  }
+
+  .nav-links a:hover {
+    color: var(--white);
+  }
+  .nav-links a:hover::before { transform: translateX(0); }
+  .nav-links a:hover::after  { transform: scaleX(1); }
+  .nav-links a:hover .link-index { opacity: 1; }
+
+  /* Active state */
+  .nav-links a.active {
+    color: var(--white);
+  }
+  .nav-links a.active::after {
+    transform: scaleX(1);
+    background: linear-gradient(90deg, var(--f1-red), #FF6B00);
+  }
+
+  /* ── PIT STOP BUTTON ── */
+  .nav-pit {
+    position: relative;
+    padding: 0 1.4rem;
+    height: 36px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--white);
+    background: var(--f1-red);
+    border: none;
+    cursor: pointer;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    transition: background 0.25s ease, transform 0.2s var(--transition-bounce);
+    white-space: nowrap;
+
+    /* Mount animation */
+    opacity: 0;
+    animation: pit-enter 0.5s var(--transition-snap) 0.45s forwards;
+  }
+
+  @keyframes pit-enter {
+    to { opacity: 1; }
+  }
+
+  /* Shine sweep on hover */
+  .nav-pit::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.25) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 0.45s ease;
+  }
+
+  /* Right arrow track */
+  .nav-pit .pit-arrow {
+    display: inline-block;
+    margin-left: 0.5rem;
+    transition: transform 0.25s var(--transition-bounce);
+  }
+
+  .nav-pit:hover {
+    background: #FF1E44;
+    transform: scale(1.04);
+  }
+  .nav-pit:hover::before { transform: translateX(100%); }
+  .nav-pit:hover .pit-arrow { transform: translateX(4px); }
+  .nav-pit:active { transform: scale(0.97); }
+
+  /* ── TELEMETRY TICKER (decorative) ── */
+  .nav-telemetry {
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.5rem;
+    color: var(--chrome-dim);
+    letter-spacing: 0.1em;
+    opacity: 0;
+    white-space: nowrap;
+    transition: opacity 0.4s ease 0.1s;
+    pointer-events: none;
+  }
+  .f1-nav.scrolled .nav-telemetry { opacity: 0.35; }
+
+  /* ── DEMO SCAFFOLD ── */
+  .demo-wrap {
+    padding: 6rem 2rem 2rem;
+    color: var(--chrome-dim);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    line-height: 1.8;
+  }
+`;
+
+const sections = ["about", "work", "projects", "contact"];
+
+export default function PortfolioNav({ scrollY: scrollYProp, onNavigate, logoImg }) {
+  const [scrollY, setScrollY] = useState(scrollYProp ?? 0);
+  const [active, setActive]   = useState(null);
+  const [tick, setTick]       = useState("LAP 01 · 1:23.456 · PIT WINDOW OPEN · DRS ENABLED");
+  const rafRef = useRef(null);
+
+  // If no external scrollY prop, track internally
+  useEffect(() => {
+    if (scrollYProp !== undefined) return;
+    const onScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [scrollYProp]);
+
+  // Tick telemetry string
+  useEffect(() => {
+    const tickers = [
+      "LAP 01 · 1:23.456 · DRS ENABLED · TYRE: SOFT",
+      "SECTOR 2 · GAP +0.342 · PIT WINDOW: OPEN",
+      "PUSH NOW · ENERGY DEPLOY 100% · FINAL LAP",
+      "LAP 07 · 1:21.890 · FASTEST LAP ■ PURPLE",
+    ];
+    let i = 0;
+    const id = setInterval(() => { i = (i + 1) % tickers.length; setTick(tickers[i]); }, 3000);
+    return () => clearInterval(id);
+  }, []);
+
+  const isScrolled = (scrollYProp ?? scrollY) > 60;
+
+  const navigate = (section) => {
+    setActive(section);
+    if (onNavigate) onNavigate(section);
+  };
+
+  const goHome = (e) => {
+    e.preventDefault();
+    setActive(null);
+    const el = document.getElementById("home");
+    if (el) { navigate("home"); return; }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
-    <nav className={`f1-nav${scrollY > 60 ? ' scrolled' : ''}`}>
-      <a href="#home" onClick={goHome} aria-label="Go to top">
-        <img src={logoImg} alt="Logo" className="h-10 w-10 object-contain" />
-      </a>
+    <>
+      <style>{styles}</style>
 
-      <ul className="nav-links">
-        {sections.map((section) => (
-          <li key={section}>
-            <a
-              href="#"
-              onClick={(event) => {
-                event.preventDefault()
-                onNavigate(section)
-              }}
-            >
-              {section}
-            </a>
-          </li>
-        ))}
-      </ul>
+      <nav className={`f1-nav${isScrolled ? " scrolled" : ""}`}>
 
-      <button className="nav-pit" onClick={() => onNavigate('contact')}>Pit Stop -&gt;</button>
-    </nav>
-  )
+        {/* LOGO */}
+        <a href="#home" className="nav-logo-wrap" onClick={goHome} aria-label="Go to top">
+          {logoImg
+            ? <img src={logoImg} alt="Logo" />
+            : (
+              /* Fallback SVG mark if no logoImg prop */
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                <polygon points="18,2 34,32 2,32" fill="none" stroke="#E8002D" strokeWidth="2"/>
+                <polygon points="18,10 28,28 8,28" fill="#E8002D" opacity="0.3"/>
+                <line x1="18" y1="10" x2="18" y2="26" stroke="#E8002D" strokeWidth="1.5"/>
+              </svg>
+            )
+          }
+        </a>
+
+        <div className="nav-spacer" />
+
+        {/* LINKS */}
+        <ul className="nav-links">
+          {sections.map((section, i) => (
+            <li key={section}>
+              <a
+                href="#"
+                className={active === section ? "active" : ""}
+                onClick={(e) => { e.preventDefault(); navigate(section); }}
+              >
+                <span className="link-index">{String(i + 2).padStart(2, "0")}</span>
+                {section}
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        {/* PIT STOP CTA */}
+        <button className="nav-pit" onClick={() => navigate("contact")}>
+          Pit Stop <span className="pit-arrow">→</span>
+        </button>
+
+        {/* Telemetry ticker — visible only when scrolled */}
+        <span className="nav-telemetry" aria-hidden="true">{tick}</span>
+      </nav>
+    </>
+  );
 }

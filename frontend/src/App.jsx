@@ -17,10 +17,46 @@ import mailIcon from './assets/mail.webp'
 const githubIcon = 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg'
 
 const projects = [
-  { num: '01', featured: true, title: 'E-Commerce Platform', desc: 'Full-stack shopping experience with dynamic catalogue, cart engine, and Stripe integration. Serves 10k+ daily sessions with sub-200ms TTFB.', tags: ['React', 'Node.js', 'MongoDB', 'Stripe'] },
-  { num: '02', featured: false, title: 'AI Chat App', desc: 'Conversational AI platform with context-aware replies and adaptive learning per user session.', tags: ['Python', 'Flask', 'ML'] },
-  { num: '03', featured: false, title: 'Task Manager', desc: 'Real-time collaborative task tool with role-based auth and Firebase sync across devices.', tags: ['React', 'Firebase'] },
-  { num: '04', featured: false, title: 'This Portfolio', desc: 'F1-themed, built for speed and precision. Every millisecond matters - on track and in the browser.', tags: ['React', 'Tailwind'] },
+  {
+    num: '01',
+    featured: true,
+    title: 'SoleCraft',
+    desc: 'A service-oriented web application to organize the informal cobbler sector, offering digital access to shoe exchange, customization, servicing, reselling, and shopping.',
+    tags: ['React', 'Express', 'Node.js', 'MongoDB', 'JWT', 'Tailwind'],
+    github: 'https://github.com/sohamhipparkar/SoleCraft', 
+    live: 'https://sole-craft.vercel.app/',           
+    year: '2025',
+    type: 'Full-Stack Web Application',
+    role: 'Solo Developer',
+    stats: ['60% Service Engagement', '40% Code Maintainability', 'Real Life'],
+  },
+  {
+    num: '02',
+    featured: false,
+    title: 'JetSetGo',
+    desc: 'Flight management system with aircraft status, scheduling, and maintenance tracking.',
+    tags: ['React', 'Tailwind', 'React DOM'],
+    github: 'https://github.com/sohamhipparkar/JetSetGo',        
+    live: 'https://jet-set-go-six.vercel.app/',                                           
+  },
+  {
+    num: '03',
+    featured: false,
+    title: 'DSA Tracker',
+    desc: 'Real-time progress tracker for data structures and algorithms practice, with interactive visualizations.',
+    tags: ['React', 'Zustand', 'DnD Kit', 'Node.js'],
+    github: 'https://github.com/sohamhipparkar/DSA-Trackerr',       
+    live: 'https://soham-dsa-tracker.vercel.app/',                
+  },
+  {
+    num: '04',
+    featured: false,
+    title: 'GlobeMart',
+    desc: 'E-commerce platform for global products with localized shopping experience.',
+    tags: ['React', 'Tailwind', 'Framer Motion'],
+    github: 'https://github.com/sohamhipparkar/GlobeMart',          
+    live: 'https://globe-mart-wine.vercel.app/',                     
+  },
 ]
 
 function PortfolioMain() {
