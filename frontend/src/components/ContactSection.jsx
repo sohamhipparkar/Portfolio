@@ -690,7 +690,20 @@ const style = `
   @media (max-width: 768px) {
     .cs-root { padding: 48px 24px 80px; }
     .cs-grid { grid-template-columns: 1fr; gap: 48px; }
-    .cs-telemetry { left: 24px; right: 24px; flex-wrap: wrap; gap: 20px; }
+    .cs-telemetry {
+      position: static;
+      left: auto;
+      right: auto;
+      bottom: auto;
+      margin-top: 34px;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding-top: 18px;
+    }
+
+    .cs-tele-item {
+      min-width: 130px;
+    }
   }
 `
 
