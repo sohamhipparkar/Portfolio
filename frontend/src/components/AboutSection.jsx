@@ -169,11 +169,11 @@ export default function AboutSection() {
   }, [])
 
   const techSpecs = [
-    { k: 'Frontend', v: 'React · Framer Motion · Tailwind CSS', icon: '⚛️', pct: 92 },
-    { k: 'Backend',  v: 'Node.js · Express · REST · Prisma',   icon: '⚙️', pct: 85 },
-    { k: 'Database', v: 'PostgreSQL · MongoDB · Redis',         icon: '🗄️', pct: 80 },
-    { k: 'DevOps',   v: 'Git · Vercel · AWS',                  icon: '☁️', pct: 72 },
-    { k: 'Design',   v: 'Figma · Motion · Typography',         icon: '🎨', pct: 78 },
+    { k: 'Frontend', v: 'React · Framer Motion · Tailwind CSS', icon: '⚛️'},
+    { k: 'Backend',  v: 'Node.js · Express · REST · Prisma',   icon: '⚙️'},
+    { k: 'Database', v: 'PostgreSQL · MongoDB · Redis',         icon: '🗄️' },
+    { k: 'DevOps',   v: 'Git · Vercel · AWS',                  icon: '☁️' },
+    { k: 'Design',   v: 'Figma · Motion · Typography',         icon: '🎨' },
   ]
 
   const chips = ['React','Express','Node.js','Python','Tailwind CSS','PostgreSQL','MongoDB','Figma','TypeScript','Redis']
@@ -838,14 +838,6 @@ export default function AboutSection() {
                       }}>
                         {row.v}
                       </dd>
-                      <span style={{
-                        fontFamily: "'Share Tech Mono', monospace",
-                        fontSize: '0.48rem', color: hoveredSpec === i ? '#E8002D' : '#2e2e2e',
-                        transition: 'color .3s',
-                        flexShrink: 0,
-                      }}>
-                        {row.pct}%
-                      </span>
                     </div>
                     {/* Progress bar */}
                     <div style={{
@@ -888,30 +880,6 @@ export default function AboutSection() {
                 opacity: 0.4,
               }} />
             </div>
-          </div>
-
-          {/* Footer strip */}
-          <div className="ab-d7" style={{
-            marginTop: 52,
-            display: 'flex', alignItems: 'center', gap: 16,
-            opacity: 0,
-            animation: visible ? 'heroIn .8s cubic-bezier(.16,1,.3,1) .9s both' : 'none',
-          }}>
-            <div style={{
-              height: 1, flex: 1,
-              background: 'linear-gradient(to right, rgba(232,0,45,0.4), rgba(255,255,255,0.06), transparent)',
-            }} />
-            <span style={{
-              fontFamily: "'Share Tech Mono', monospace",
-              fontSize: '0.48rem', letterSpacing: '0.2em',
-              textTransform: 'uppercase', color: '#2e2e2e',
-            }}>
-              END OF PROFILE · v2.0.27
-            </span>
-            <div style={{
-              height: 1, flex: 1,
-              background: 'linear-gradient(to left, rgba(232,0,45,0.4), rgba(255,255,255,0.06), transparent)',
-            }} />
           </div>
         </div>
       </section>
