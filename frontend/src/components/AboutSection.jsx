@@ -171,12 +171,12 @@ export default function AboutSection() {
   const techSpecs = [
     { k: 'Frontend', v: 'React · Framer Motion · Tailwind CSS', icon: '⚛️'},
     { k: 'Backend',  v: 'Node.js · Express · REST · Prisma',   icon: '⚙️'},
-    { k: 'Database', v: 'PostgreSQL · MongoDB · Redis',         icon: '🗄️' },
+    { k: 'Database', v: 'PostgreSQL · MongoDB · MySQL',         icon: '🗄️' },
     { k: 'DevOps',   v: 'Git · Vercel · AWS',                  icon: '☁️' },
     { k: 'Design',   v: 'Figma · Motion · Typography',         icon: '🎨' },
   ]
 
-  const chips = ['React','Express','Node.js','Python','Tailwind CSS','PostgreSQL','MongoDB','Figma','TypeScript','Redis']
+  const chips = ['React','Express','Node.js','Python','Tailwind CSS','PostgreSQL','MongoDB','Figma','TypeScript','MySQL', 'AWS', 'Git']
 
   const profileCards = [
     { emoji: '🎓', label: 'Student',       sub: "MIT ADT · Class of '27", color: '#38bdf8', accent: 'rgba(56,189,248,0.12)' },
@@ -187,7 +187,7 @@ export default function AboutSection() {
   const stats = [
     { lbl: 'Experience', num: 3,   suffix: '+ Yrs' },
     { lbl: 'Shipped',    num: 10,  suffix: '+ Projects' },
-    { lbl: 'Commits',    num: 700, suffix: '+' },
+    { lbl: 'Commits',    num: 200, suffix: '+' },
     { lbl: 'Status',     val: 'OPEN', green: true },
   ]
 
@@ -409,7 +409,7 @@ export default function AboutSection() {
           position: 'relative',
           background: '#080808',
           overflow: 'hidden',
-          padding: '80px 56px 112px',
+          padding: '80px 56px 80px',
           fontFamily: "'Barlow Condensed', sans-serif",
         }}
         aria-label="About me"
