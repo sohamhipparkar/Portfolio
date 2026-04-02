@@ -772,7 +772,7 @@ export default function ProjectsSection({ projects }) {
           subtitle="Precision-engineered builds — each one a lap record in its own right."
         />
 
-        {/* ── Featured Project ─────────────────────────────────── */}
+        {/* ─────────────────────────────────── Featured Project ─────────────────────────────────── */}
         {featured && (
           <div
             className="sec-d3 proj-featured"
