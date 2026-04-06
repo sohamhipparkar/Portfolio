@@ -244,10 +244,13 @@ const style = `
   .cs-left { display: flex; flex-direction: column; gap: 32px; }
 
   .cs-headline {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(64px, 8vw, 96px);
-    line-height: 0.92;
-    letter-spacing: 0.02em;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-style: italic;
+    font-size: clamp(3.5rem, 9vw, 8rem);
+    line-height: 1.05;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
     color: var(--white);
     opacity: 0;
     transform: translateY(30px);
@@ -285,17 +288,19 @@ const style = `
     animation: cs-glitch-clip-2 .15s steps(1) both, cs-glitch-x-2 .15s steps(1) both;
   }
 
-  .cs-headline .cs-red { color: var(--red); position: relative; display: inline-block; }
+  .cs-headline .cs-red { color: var(--red); position: relative; display: inline-block; line-height: 1; }
 
   .cs-headline .cs-red::after {
     content: '';
     position: absolute;
-    bottom: 4px; left: 0; right: 0;
+    bottom: -4px; left: 0;
+    width: 100%;
     height: 3px;
-    background: var(--red);
+    background: linear-gradient(to right, var(--red), rgba(232,0,45,0.25));
     transform: scaleX(0);
     transform-origin: left;
     animation: none;
+    display: block;
   }
 
   .cs-root.cs-visible .cs-headline .cs-red::after { animation: underline-in 0.5s ease forwards 1.1s; }
@@ -826,7 +831,7 @@ export default function ContactSection() {
           {/* LEFT */}
           <div className="cs-left">
             <h2 className="cs-headline">
-              <GlitchText> Ready to </GlitchText><br />build<br /><span className="cs-red">something</span><br />fast?
+              <GlitchText>Ready to build</GlitchText><br /><span className="cs-red">something</span> fast?
             </h2>
             <p className="cs-desc">
               Open to new projects, collaborations, and opportunities. Drop me a message — I respond quickly. Always.
