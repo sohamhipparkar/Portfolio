@@ -456,6 +456,39 @@ const styles = `
     letter-spacing: 0.05em;
     line-height: 1.8;
   }
+
+  .nav-links a.launching {
+    color: var(--white);
+    animation: nav-launch 0.62s var(--transition-snap) both;
+  }
+
+  .nav-links a.launching::before {
+    transform: translateX(0);
+    background: linear-gradient(90deg, rgba(232,0,45,0.16), rgba(255,255,255,0.08), rgba(232,0,45,0.16));
+    animation: launch-sweep 0.62s ease-out both;
+  }
+
+  .nav-links a.launching::after {
+    transform: scaleX(1);
+    background: linear-gradient(90deg, var(--f1-red), #FFB000);
+    box-shadow: 0 0 12px rgba(232,0,45,0.35);
+  }
+
+  .nav-links a.launching .link-index {
+    opacity: 1;
+  }
+
+  @keyframes nav-launch {
+    0% { transform: translateY(0) scale(1); }
+    38% { transform: translateY(-2px) scale(1.04); }
+    100% { transform: translateY(0) scale(1); }
+  }
+
+  @keyframes launch-sweep {
+    0% { transform: translateX(-100%); opacity: 0; }
+    15% { opacity: 1; }
+    100% { transform: translateX(100%); opacity: 0; }
+  }
 `;
 
 const sections = ["about", "work", "projects", "contact"];
@@ -465,7 +498,9 @@ export default function PortfolioNav({ scrollY: scrollYProp, onNavigate, logoImg
   const [active, setActive]   = useState(null);
   const [tick, setTick]       = useState("LAP 01 · 1:23.456 · PIT WINDOW OPEN · DRS ENABLED");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [launching, setLaunching] = useState(null);
   const navRef = useRef(null);
+  const launchTimerRef = useRef(null);
 
   // If no external scrollY prop, track internally
   useEffect(() => {
@@ -517,7 +552,10 @@ export default function PortfolioNav({ scrollY: scrollYProp, onNavigate, logoImg
   const isScrolled = (scrollYProp ?? scrollY) > 60;
 
   const navigate = (section) => {
+    if (launchTimerRef.current) clearTimeout(launchTimerRef.current);
     setActive(section);
+    setLaunching(section);
+    launchTimerRef.current = setTimeout(() => setLaunching(null), 620);
     setIsMobileMenuOpen(false);
     if (onNavigate) onNavigate(section);
   };
@@ -573,7 +611,7 @@ export default function PortfolioNav({ scrollY: scrollYProp, onNavigate, logoImg
             <li key={section}>
               <a
                 href="#"
-                className={active === section ? "active" : ""}
+                className={`${active === section ? "active" : ""}${launching === section ? " launching" : ""}`}
                 onClick={(e) => { e.preventDefault(); navigate(section); }}
               >
                 <span className="link-index">{String(i + 2).padStart(2, "0")}</span>

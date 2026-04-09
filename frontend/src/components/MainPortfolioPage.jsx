@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 const FontLoader = () => (
   <style>{`
@@ -47,6 +47,249 @@ const FontLoader = () => (
       background: linear-gradient(90deg, var(--red-dim), var(--red));
       z-index: 300; transition: width 0.1s linear;
       box-shadow: 0 0 12px var(--red-glow);
+    }
+
+    .launch-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 260;
+      pointer-events: none;
+      overflow: hidden;
+      isolation: isolate;
+      background:
+        radial-gradient(circle at 50% 52%, rgba(232,0,45,0.12) 0%, transparent 38%),
+        radial-gradient(circle at 18% 50%, rgba(56,189,248,0.08) 0%, transparent 22%),
+        radial-gradient(circle at 82% 50%, rgba(255,176,0,0.06) 0%, transparent 24%),
+        linear-gradient(180deg, rgba(8,8,8,0.12) 0%, rgba(8,8,8,0.78) 100%);
+      animation: launch-overlay-in 0.96s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .launch-overlay::before,
+    .launch-overlay::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .launch-overlay::before {
+      background-image:
+        linear-gradient(120deg, transparent 0 39%, rgba(255,255,255,0.11) 43%, transparent 47%),
+        linear-gradient(120deg, transparent 0 56%, rgba(232,0,45,0.18) 61%, transparent 68%),
+        repeating-linear-gradient(90deg, transparent 0 58px, rgba(255,255,255,0.04) 58px 60px, transparent 60px 120px);
+      background-size: 160% 100%;
+      transform: translateX(-18%);
+      animation: launch-streak 0.96s cubic-bezier(0.16, 1, 0.3, 1) both;
+      mix-blend-mode: screen;
+    }
+
+    .launch-overlay::after {
+      background:
+        linear-gradient(90deg, transparent 0 9%, rgba(255,255,255,0.05) 9.5% 10%, transparent 10.5% 28%, rgba(232,0,45,0.08) 28.5% 29.5%, transparent 30% 70%, rgba(255,255,255,0.06) 70.5% 71.5%, transparent 72% 100%),
+        repeating-linear-gradient(0deg, transparent 0 12px, rgba(255,255,255,0.02) 12px 13px);
+      opacity: 0.62;
+      animation: launch-grid 0.96s ease-out both;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,0.18), black 18%, black 82%, rgba(0,0,0,0.18));
+    }
+
+    .launch-overlay__core {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      gap: 16px;
+      text-align: center;
+      transform: translateY(8px);
+    }
+
+    .launch-overlay__signal-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 6px;
+      animation: launch-signal-row 0.96s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .launch-overlay__signal {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      box-shadow: 0 0 0 rgba(232,0,45,0);
+      animation: launch-signal 0.96s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .launch-overlay__signal:nth-child(1) { animation-delay: 0.02s; }
+    .launch-overlay__signal:nth-child(2) { animation-delay: 0.08s; }
+    .launch-overlay__signal:nth-child(3) { animation-delay: 0.14s; }
+    .launch-overlay__signal:nth-child(4) { animation-delay: 0.20s; }
+    .launch-overlay__signal:nth-child(5) { animation-delay: 0.26s; }
+
+    .launch-overlay__badge {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.72);
+      background: rgba(11,11,11,0.58);
+      border: 1px solid rgba(232,0,45,0.2);
+      padding: 10px 16px;
+      clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+      box-shadow: 0 0 24px rgba(232,0,45,0.12);
+      animation: launch-badge 0.96s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .launch-overlay__title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(2.6rem, 7vw, 5.8rem);
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: -0.04em;
+      line-height: 0.92;
+      text-transform: uppercase;
+      color: #fff;
+      text-shadow: 0 0 24px rgba(232,0,45,0.28);
+      animation: launch-title 0.96s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .launch-overlay__title span {
+      color: var(--red);
+    }
+
+    .launch-overlay__sub {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.56);
+      animation: launch-sub 0.96s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .launch-overlay__pulse {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: min(58vw, 640px);
+      height: min(58vw, 640px);
+      border-radius: 50%;
+      transform: translate(-50%, -50%) scale(0.35);
+      background: radial-gradient(circle, rgba(232,0,45,0.24) 0%, rgba(232,0,45,0.08) 30%, transparent 68%);
+      filter: blur(10px);
+      opacity: 0;
+      animation: launch-pulse 0.96s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .launch-overlay__rails {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, transparent 0 15%, rgba(255,255,255,0.03) 15% 15.5%, transparent 15.5% 84.5%, rgba(255,255,255,0.03) 84.5% 85%, transparent 85% 100%),
+        linear-gradient(180deg, transparent 0 48%, rgba(232,0,45,0.15) 48.5% 49%, transparent 49.5% 100%);
+      opacity: 0;
+      animation: launch-rails 0.96s ease-out both;
+    }
+
+    .launch-overlay__track {
+      position: absolute;
+      left: -12%;
+      right: -12%;
+      top: 50%;
+      height: 2px;
+      margin-top: 44px;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.05) 14%, rgba(232,0,45,0.7) 50%, rgba(255,255,255,0.05) 86%, transparent 100%);
+      box-shadow: 0 0 16px rgba(232,0,45,0.28);
+      transform-origin: center;
+      animation: launch-track 0.88s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes launch-overlay-in {
+      0%   { opacity: 0; }
+      10%  { opacity: 1; }
+      74%  { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    @keyframes launch-streak {
+      0%   { opacity: 0; transform: translateX(-26%) skewX(-16deg); }
+      18%  { opacity: 1; }
+      72%  { opacity: 1; }
+      100% { opacity: 0; transform: translateX(26%) skewX(-16deg); }
+    }
+
+    @keyframes launch-grid {
+      0%   { opacity: 0; transform: scale(1.02); }
+      20%  { opacity: 0.7; }
+      100% { opacity: 0; transform: scale(1.08); }
+    }
+
+    @keyframes launch-badge {
+      0%   { opacity: 0; transform: translateY(18px) scale(0.92); filter: blur(2px); }
+      20%  { opacity: 1; }
+      78%  { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-16px) scale(1); filter: blur(0); }
+    }
+
+    @keyframes launch-title {
+      0%   { opacity: 0; transform: translateY(20px) skewX(-7deg); letter-spacing: -0.08em; }
+      18%  { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-14px) skewX(0deg); letter-spacing: -0.04em; }
+    }
+
+    @keyframes launch-sub {
+      0%   { opacity: 0; transform: translateY(12px); }
+      22%  { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-10px); }
+    }
+
+    @keyframes launch-pulse {
+      0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.25); }
+      18%  { opacity: 0.85; }
+      60%  { opacity: 0.22; transform: translate(-50%, -50%) scale(0.85); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.08); }
+    }
+
+    @keyframes launch-track {
+      0%   { transform: scaleX(0.2); opacity: 0; }
+      16%  { transform: scaleX(1); opacity: 1; }
+      70%  { transform: scaleX(1); opacity: 0.9; }
+      100% { transform: scaleX(1.2); opacity: 0; }
+    }
+
+    @keyframes launch-signal-row {
+      0% { opacity: 0; transform: translateY(10px); }
+      18% { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-8px); }
+    }
+
+    @keyframes launch-signal {
+      0% { opacity: 0; transform: scale(0.35); }
+      20% { opacity: 1; transform: scale(1); background: rgba(232,0,45,0.88); box-shadow: 0 0 16px rgba(232,0,45,0.34); }
+      70% { opacity: 1; transform: scale(1.12); }
+      100% { opacity: 0; transform: scale(0.9); }
+    }
+
+    @keyframes launch-rails {
+      0% { opacity: 0; transform: scaleX(0.9); }
+      18% { opacity: 1; }
+      100% { opacity: 0; transform: scaleX(1.03); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .launch-overlay,
+      .launch-overlay::before,
+      .launch-overlay::after,
+      .launch-overlay__core,
+      .launch-overlay__rails,
+      .launch-overlay__signal-row,
+      .launch-overlay__signal,
+      .launch-overlay__badge,
+      .launch-overlay__title,
+      .launch-overlay__sub,
+      .launch-overlay__pulse,
+      .launch-overlay__track {
+        animation: none !important;
+      }
     }
 
     /* NAV */
@@ -449,7 +692,24 @@ export default function MainPortfolioPage({
 }) {
   const [scrollY, setScrollY] = useState(0)
   const [pct, setPct] = useState(0)
+  const [jumpTransition, setJumpTransition] = useState(null)
+  const transitionTimerRef = useRef(null)
   const resumeLink = 'https://drive.google.com/file/d/16L3bG9SRe935JUk7urKlawEmpDGsfmcX/view?usp=sharing'
+  const sectionOrder = ['home', 'about', 'work', 'projects', 'contact']
+  const transitionLabels = {
+    home: 'PIT RETURN',
+    about: 'SECTOR 02',
+    work: 'SECTOR 03',
+    projects: 'SECTOR 04',
+    contact: 'FINAL STOP',
+  }
+  const transitionSubtitles = {
+    home: 'BOX LANE • RESET THE LAP',
+    about: 'SECTOR 02 • BUILDING THE RACE',
+    work: 'SECTOR 03 • TEAM STRATEGY ACTIVE',
+    projects: 'SECTOR 04 • PUSHING THE PACE',
+    contact: 'CHECKERED FLAG • END OF RUN',
+  }
 
   useEffect(() => {
     const fn = () => {
@@ -460,7 +720,38 @@ export default function MainPortfolioPage({
     return () => window.removeEventListener('scroll', fn)
   }, [])
 
-  const go = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+  useEffect(() => () => {
+    if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current)
+  }, [])
+
+  const go = (id) => {
+    const el = document.getElementById(id)
+    if (!el) return
+
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    const targetIndex = sectionOrder.indexOf(id)
+    const currentIndex = sectionOrder.reduce((closest, sectionId, index) => {
+      const sectionEl = document.getElementById(sectionId)
+      if (!sectionEl) return closest
+      const top = sectionEl.getBoundingClientRect().top
+      return Math.abs(top) < Math.abs(closest.distance) ? { index, distance: top } : closest
+    }, { index: 0, distance: Number.POSITIVE_INFINITY }).index
+
+    if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current)
+    setJumpTransition({ id, direction: targetIndex >= currentIndex ? 'forward' : 'reverse', label: transitionLabels[id] || 'LAP TRANSFER' })
+
+    if (reduceMotion) {
+      el.scrollIntoView({ behavior: 'auto', block: 'start' })
+      transitionTimerRef.current = setTimeout(() => setJumpTransition(null), 180)
+      return
+    }
+
+    requestAnimationFrame(() => {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
+
+    transitionTimerRef.current = setTimeout(() => setJumpTransition(null), 920)
+  }
 
   return (
     <>
@@ -468,6 +759,28 @@ export default function MainPortfolioPage({
       <div className="grain carbon-bg" style={{ minHeight: '100vh' }}>
 
         <div className="progress-bar" style={{ width: `${pct}%` }} />
+
+        {jumpTransition && (
+          <div className={`launch-overlay ${jumpTransition.direction}`} aria-hidden="true">
+            <div className="launch-overlay__rails" />
+            <div className="launch-overlay__pulse" />
+            <div className="launch-overlay__track" />
+            <div className="launch-overlay__core">
+              <div className="launch-overlay__signal-row" aria-hidden="true">
+                <span className="launch-overlay__signal" />
+                <span className="launch-overlay__signal" />
+                <span className="launch-overlay__signal" />
+                <span className="launch-overlay__signal" />
+                <span className="launch-overlay__signal" />
+              </div>
+              <div className="launch-overlay__badge">PIT LANE TRANSFER</div>
+              <div className="launch-overlay__title">
+                {jumpTransition.label} <span>{jumpTransition.id.toUpperCase()}</span>
+              </div>
+              <div className="launch-overlay__sub">{transitionSubtitles[jumpTransition.id] || 'DRS OPEN • TELEMETRY LOCKED • SCROLLING'}</div>
+            </div>
+          </div>
+        )}
 
         {/* NAV */}
         {renderNav?.({ scrollY, onNavigate: go })}
