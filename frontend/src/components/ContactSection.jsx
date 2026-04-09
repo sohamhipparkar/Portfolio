@@ -694,7 +694,12 @@ const style = `
 
   @media (max-width: 768px) {
     .cs-root { padding: 48px 24px 80px; }
-    .cs-grid { grid-template-columns: 1fr; gap: 48px; }
+    .cs-grid { display: flex; flex-direction: column; gap: 16px; }
+    .cs-left { display: contents; }
+    .cs-headline { order: 1; }
+    .cs-desc { order: 2; margin-bottom: 16px; }
+    .cs-form { order: 3; }
+    .cs-links { order: 4; margin-top: 16px; }
     .cs-telemetry {
       position: static;
       left: auto;
