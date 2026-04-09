@@ -489,16 +489,27 @@ export default function PreviousTeamsSection() {
           .tl-card { padding: 20px 20px; }
           .tl-card:hover { transform: translateX(4px); }
         }
+
+        /* Match contact heading underline gap */
+        .tl-header-fix .sec-bar {
+          bottom: -4px !important;
+        }
+
+        .tl-header-fix h2 > span {
+          line-height: 1;
+        }
       `}</style>
 
       <SectionBg mousePos={mousePos} ghostNum="03" redGlowPos="top-right" />
 
       <div style={{ position: 'relative', zIndex: 10, maxWidth: 1080 }}>
-        <SectionHeader
-          sectorLabel="Sector 03 - Race History"
-          title={[<GlitchWord key="previous">Previous</GlitchWord>, 'Teams', '']}
-          subtitle="Roles where speed, craft, and ownership were non-negotiable."
-        />
+        <div className="tl-header-fix">
+          <SectionHeader
+            sectorLabel="Sector 03 - Race History"
+            title={[<GlitchWord key="previous">Previous</GlitchWord>, 'Teams', '']}
+            subtitle="Roles where speed, craft, and ownership were non-negotiable."
+          />
+        </div>
 
         <div className="sec-d3 tl-wrapper">
           {jobs.map((job, i) => (

@@ -496,7 +496,7 @@ const sections = ["about", "work", "projects", "contact"];
 export default function PortfolioNav({ scrollY: scrollYProp, onNavigate, logoImg }) {
   const [scrollY, setScrollY] = useState(scrollYProp ?? 0);
   const [active, setActive]   = useState(null);
-  const [tick, setTick]       = useState("LAP 01 · 1:23.456 · PIT WINDOW OPEN · DRS ENABLED");
+  //const [tick, setTick]       = useState("LAP 01 · 1:23.456 · PIT WINDOW OPEN · DRS ENABLED");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [launching, setLaunching] = useState(null);
   const navRef = useRef(null);
@@ -511,7 +511,7 @@ export default function PortfolioNav({ scrollY: scrollYProp, onNavigate, logoImg
   }, [scrollYProp]);
 
   // Tick telemetry string
-  useEffect(() => {
+  {/*useEffect(() => {
     const tickers = [
       "LAP 01 · 1:23.456 · DRS ENABLED · TYRE: SOFT",
       "SECTOR 2 · GAP +0.342 · PIT WINDOW: OPEN",
@@ -521,7 +521,7 @@ export default function PortfolioNav({ scrollY: scrollYProp, onNavigate, logoImg
     let i = 0;
     const id = setInterval(() => { i = (i + 1) % tickers.length; setTick(tickers[i]); }, 3000);
     return () => clearInterval(id);
-  }, []);
+  }, []);*/}
 
   useEffect(() => {
     const onResize = () => {
@@ -627,7 +627,7 @@ export default function PortfolioNav({ scrollY: scrollYProp, onNavigate, logoImg
         </button>
 
         {/* Telemetry ticker — visible only when scrolled */}
-        <span className="nav-telemetry" aria-hidden="true">{tick}</span>
+        {/* <span className="nav-telemetry" aria-hidden="true">{tick}</span> */}
       </nav>
     </>
   );

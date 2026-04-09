@@ -320,7 +320,19 @@ const style = `
   .cs-root.cs-visible .cs-desc { animation: fade-up 0.6s ease forwards 0.5s; }
 
   /* === RADIO LINKS === */
-  .cs-links { display: flex; flex-direction: column; gap: 2px; }
+  .cs-links {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    opacity: 0;
+    transform: translateX(-22px);
+    pointer-events: none;
+  }
+
+  .cs-root.cs-visible .cs-links {
+    animation: fade-left 0.65s cubic-bezier(0.16,1,0.3,1) forwards 0.62s;
+    pointer-events: auto;
+  }
 
   .cs-link {
     display: flex;
@@ -334,14 +346,14 @@ const style = `
     overflow: hidden;
     transition: border-color 0.3s, background 0.3s, transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.35s;
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(12px);
   }
 
   .cs-root.cs-visible .cs-link { animation: fade-up 0.5s ease forwards; }
 
-  .cs-link:nth-child(1) { animation-delay: 0.6s; }
-  .cs-link:nth-child(2) { animation-delay: 0.7s; }
-  .cs-link:nth-child(3) { animation-delay: 0.8s; }
+  .cs-link:nth-child(1) { animation-delay: 0.78s; }
+  .cs-link:nth-child(2) { animation-delay: 0.9s; }
+  .cs-link:nth-child(3) { animation-delay: 1.02s; }
 
   .cs-link::before {
     content: '';
@@ -431,6 +443,8 @@ const style = `
   .cs-root.cs-visible .cs-form { animation: fade-right 0.8s cubic-bezier(0.16,1,0.3,1) forwards 0.4s; }
 
   @keyframes fade-right { to { opacity: 1; transform: translateX(0); } }
+
+  @keyframes fade-left { to { opacity: 1; transform: translateX(0); } }
 
   .cs-form-header {
     display: flex;

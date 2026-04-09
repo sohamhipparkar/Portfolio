@@ -570,11 +570,11 @@ export default function AboutSection() {
           }}>
             <GlitchText data-text="Hi, I'm a">Hi, I'm a</GlitchText>
             <br />
-            <span style={{ color: '#E8002D', position: 'relative', display: 'inline-block' }}>
+            <span style={{ color: '#E8002D', position: 'relative', display: 'inline-block', lineHeight: 1 }}>
               Full‑Stack
               {/* Underline bar */}
               <span style={{
-                position: 'absolute', bottom: -6, left: 0,
+                position: 'absolute', bottom: -4, left: 0,
                 height: 3, background: 'linear-gradient(to right, #E8002D, rgba(232,0,45,0.1))',
                 display: 'block',
                 animation: visible ? 'barFill 1.2s cubic-bezier(.16,1,.3,1) .4s both' : 'none',

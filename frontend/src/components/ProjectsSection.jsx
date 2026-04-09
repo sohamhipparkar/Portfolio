@@ -758,6 +758,16 @@ export default function ProjectsSection({ projects }) {
           .proj-card { padding: 24px 20px; }
           .proj-grid { grid-template-columns: 1fr; }
         }
+
+        /* Match contact heading underline gap */
+        .proj-header-fix .sec-bar {
+          bottom: -4px !important;
+        }
+
+        .proj-header-fix h2 > span {
+          line-height: 1;
+        }
+
         @media (prefers-reduced-motion: reduce) {
           *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.1ms !important; }
         }
@@ -766,11 +776,13 @@ export default function ProjectsSection({ projects }) {
       <SectionBg mousePos={mousePos} ghostNum="05" redGlowPos="top-right" />
 
       <div style={{ position: 'relative', zIndex: 10, maxWidth: 1080 }}>
-        <SectionHeader
-          sectorLabel="Sector 05 - Fastest Laps"
-          title={[<GlitchWord key="selected">Selected</GlitchWord>, 'Projects', '']}
-          subtitle="Precision-engineered builds — each one a lap record in its own right."
-        />
+        <div className="proj-header-fix">
+          <SectionHeader
+            sectorLabel="Sector 05 - Fastest Laps"
+            title={[<GlitchWord key="selected">Selected</GlitchWord>, 'Projects', '']}
+            subtitle="Precision-engineered builds — each one a lap record in its own right."
+          />
+        </div>
 
         {/* ─────────────────────────────────── Featured Project ─────────────────────────────────── */}
         {featured && (

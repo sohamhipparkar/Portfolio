@@ -714,7 +714,7 @@ export default function Hero({ onViewWork, onContact, resumeLink = '#' }) {
                 ))}
               </GlitchName>
             </span>
-            <span style={{ color: '#E8002D', position: 'relative', display: 'inline-block' }} className="name-builds">
+            <span style={{ color: '#E8002D', position: 'relative', display: 'inline-block', lineHeight: 1 }} className="name-builds">
               {'BUILDS'.split('').map((c, i) => (
                 <span key={i} className="name-letter" style={{
                   animationDelay: `${0.65 + i * 0.055}s`,
@@ -725,7 +725,7 @@ export default function Hero({ onViewWork, onContact, resumeLink = '#' }) {
               ))}
               {/* Underline */}
               <span style={{
-                position: 'absolute', bottom: -6, left: 0,
+                position: 'absolute', bottom: -4, left: 0,
                 height: 3, width: '100%',
                 background: 'linear-gradient(to right,#E8002D,rgba(232,0,45,0.25))',
                 transformOrigin: 'left',
