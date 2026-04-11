@@ -784,7 +784,7 @@ export default function ProjectsSection({ projects }) {
           />
         </div>
 
-        {/* ─────────────────────────────────── Featured Project ─────────────────────────────────── */}
+        {/* ────────────────────────────────── Featured Project ────────────────────────────────── */}
         {featured && (
           <div
             className="sec-d3 proj-featured"
