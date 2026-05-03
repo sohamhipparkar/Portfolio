@@ -33,6 +33,19 @@ const projects = [
   {
     num: '02',
     featured: false,
+    title: 'SoleCraft Admin',
+    desc: 'Admin panel for user, service, and order management with analytics.',
+    tags: ['React', 'Node.js', 'Express', 'MongoDB'],
+    github: 'https://github.com/sohamhipparkar/SoleCraft-Admin',
+    live: 'https://sole-craft-admin.vercel.app',
+    year: '2025',
+    type: 'Admin Dashboard',
+    role: 'Solo Developer',
+    stats: ['Admin Control', 'Analytics', 'Real-time Monitoring'],
+  },
+  {
+    num: '03',
+    featured: false,
     title: 'JetSetGo',
     desc: 'Flight management system with aircraft status, scheduling, and maintenance tracking.',
     tags: ['React', 'Tailwind', 'React DOM'],
@@ -40,7 +53,7 @@ const projects = [
     live: 'https://jet-set-go-six.vercel.app/',                                           
   },
   {
-    num: '03',
+    num: '04',
     featured: false,
     title: 'DSA Tracker',
     desc: 'Real-time progress tracker for data structures and algorithms practice, with interactive visualizations.',
@@ -49,7 +62,7 @@ const projects = [
     live: 'https://soham-dsa-tracker.vercel.app/',                
   },
   {
-    num: '04',
+    num: '05',
     featured: false,
     title: 'GlobeMart',
     desc: 'E-commerce platform for global products with localized shopping experience.',
@@ -58,7 +71,7 @@ const projects = [
     live: 'https://globe-mart-wine.vercel.app/',                     
   },
   {
-    num: '05',
+    num: '06',
     featured: false,
     title: 'Chat App',
     desc: 'Real-time chat application with user authentication, private messaging, and group chats.',
@@ -67,7 +80,7 @@ const projects = [
     live: null,                     
   },
   {
-    num: '06',
+    num: '07',
     featured: false,
     title: 'Portfolio Website',
     desc: 'Personal portfolio showcasing projects, skills, and experience with a modern F1-inspired design.',

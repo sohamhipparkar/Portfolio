@@ -50,10 +50,10 @@ function useTilt(strength = 12) {
 }
 
 /* ── Glitch number component ────────────────────────────────── */
-function GlitchNum({ children }) {
+function GlitchNum({ children, delay = 0 }) {
   return (
     <div className="proj-num-wrap" aria-hidden="true">
-      <span className="proj-num" data-text={children}>{children}</span>
+      <span className="proj-num" style={{ animationDelay: `${delay}ms` }} data-text={children}>{children}</span>
     </div>
   )
 }
@@ -117,7 +117,7 @@ function ProjectCard({ project, index }) {
       <div className="proj-corner" />
       <div className="proj-noise" />
 
-      <GlitchNum>{project.num}</GlitchNum>
+      <GlitchNum delay={(index + 1) * 60}>{project.num}</GlitchNum>
       <h3 className="proj-title">{project.title}</h3>
       <p className="proj-desc">{project.desc}</p>
 
@@ -255,7 +255,7 @@ export default function ProjectsSection({ projects }) {
           display: block;
           position: relative;
           animation: num-flicker 6s infinite;
-          animation-delay: var(--card-delay, 0ms);
+          animation-fill-mode: both;
           transition: color 0.3s;
         }
         .proj-num::before,
@@ -798,7 +798,7 @@ export default function ProjectsSection({ projects }) {
 
             {/* Left */}
             <div className="proj-featured-left">
-              <GlitchNum>{featured.num}</GlitchNum>
+              <GlitchNum delay={0}>{featured.num}</GlitchNum>
               <h3 className="proj-title">{featured.title}</h3>
               <p className="proj-desc">{featured.desc}</p>
 
