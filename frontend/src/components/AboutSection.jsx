@@ -1,195 +1,268 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback } from "react";
 
 /* ── Animated Counter ─────────────────────────────────────────── */
-function Counter({ target, suffix = '' }) {
-  const [val, setVal] = useState(0)
-  const ref = useRef(null)
+function Counter({ target, suffix = "" }) {
+  const [val, setVal] = useState(0);
+  const ref = useRef(null);
   useEffect(() => {
-    const observer = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) {
-        let start = 0
-        const step = target / 60
-        const timer = setInterval(() => {
-          start += step
-          if (start >= target) { setVal(target); clearInterval(timer) }
-          else setVal(Math.floor(start))
-        }, 20)
-        observer.disconnect()
-      }
-    }, { threshold: 0.5 })
-    if (ref.current) observer.observe(ref.current)
-    return () => observer.disconnect()
-  }, [target])
-  return <span ref={ref}>{val}{suffix}</span>
+    const observer = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          let start = 0;
+          const step = target / 60;
+          const timer = setInterval(() => {
+            start += step;
+            if (start >= target) {
+              setVal(target);
+              clearInterval(timer);
+            } else setVal(Math.floor(start));
+          }, 20);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.5 },
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [target]);
+  return (
+    <span ref={ref}>
+      {val}
+      {suffix}
+    </span>
+  );
 }
 
 /* ── Reveal on scroll ─────────────────────────────────────────── */
 function useReveal(threshold = 0.1) {
-  const ref = useRef(null)
-  const [visible, setVisible] = useState(false)
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
   useEffect(() => {
-    const observer = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) { setVisible(true); observer.disconnect() }
-    }, { threshold })
-    if (ref.current) observer.observe(ref.current)
-    return () => observer.disconnect()
-  }, [threshold])
-  return [ref, visible]
+    const observer = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold },
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [threshold]);
+  return [ref, visible];
 }
 
 /* ── Particle field ───────────────────────────────────────────── */
 function ParticleField() {
-  const canvasRef = useRef(null)
+  const canvasRef = useRef(null);
   useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    let raf, w, h
-    const particles = []
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    let raf, w, h;
+    const particles = [];
     const resize = () => {
-      w = canvas.width = canvas.offsetWidth
-      h = canvas.height = canvas.offsetHeight
-    }
-    resize()
-    window.addEventListener('resize', resize)
+      w = canvas.width = canvas.offsetWidth;
+      h = canvas.height = canvas.offsetHeight;
+    };
+    resize();
+    window.addEventListener("resize", resize);
     for (let i = 0; i < 55; i++) {
       particles.push({
-        x: Math.random() * w, y: Math.random() * h,
-        vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
         r: Math.random() * 1.4 + 0.3,
         alpha: Math.random() * 0.4 + 0.05,
         hue: Math.random() > 0.8 ? 350 : 0,
-      })
+      });
     }
     const draw = () => {
-      ctx.clearRect(0, 0, w, h)
-      particles.forEach(p => {
-        p.x += p.vx; p.y += p.vy
-        if (p.x < 0) p.x = w; if (p.x > w) p.x = 0
-        if (p.y < 0) p.y = h; if (p.y > h) p.y = 0
-        ctx.beginPath()
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
-        ctx.fillStyle = p.hue === 350
-          ? `rgba(232,0,45,${p.alpha})`
-          : `rgba(255,255,255,${p.alpha * 0.5})`
-        ctx.fill()
-      })
+      ctx.clearRect(0, 0, w, h);
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0) p.x = w;
+        if (p.x > w) p.x = 0;
+        if (p.y < 0) p.y = h;
+        if (p.y > h) p.y = 0;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle =
+          p.hue === 350
+            ? `rgba(232,0,45,${p.alpha})`
+            : `rgba(255,255,255,${p.alpha * 0.5})`;
+        ctx.fill();
+      });
       // Connection lines
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x
-          const dy = particles[i].y - particles[j].y
-          const dist = Math.sqrt(dx * dx + dy * dy)
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
           if (dist < 90) {
-            ctx.beginPath()
-            ctx.moveTo(particles[i].x, particles[i].y)
-            ctx.lineTo(particles[j].x, particles[j].y)
-            ctx.strokeStyle = `rgba(255,255,255,${0.04 * (1 - dist / 90)})`
-            ctx.lineWidth = 0.5
-            ctx.stroke()
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(255,255,255,${0.04 * (1 - dist / 90)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
           }
         }
       }
-      raf = requestAnimationFrame(draw)
-    }
-    draw()
-    return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', resize) }
-  }, [])
+      raf = requestAnimationFrame(draw);
+    };
+    draw();
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
   return (
-    <canvas ref={canvasRef} style={{
-      position: 'absolute', inset: 0, width: '100%', height: '100%',
-      zIndex: 1, pointerEvents: 'none', opacity: 0.7,
-    }} />
-  )
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: "absolute",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        zIndex: 1,
+        pointerEvents: "none",
+        opacity: 0.7,
+      }}
+    />
+  );
 }
 
 /* ── Glitch Text ──────────────────────────────────────────────── */
 function GlitchText({ children, style }) {
-  const [glitching, setGlitching] = useState(false)
+  const [glitching, setGlitching] = useState(false);
   useEffect(() => {
-    const interval = setInterval(() => {
-      setGlitching(true)
-      setTimeout(() => setGlitching(false), 200)
-    }, 4000 + Math.random() * 3000)
-    return () => clearInterval(interval)
-  }, [])
+    const interval = setInterval(
+      () => {
+        setGlitching(true);
+        setTimeout(() => setGlitching(false), 200);
+      },
+      4000 + Math.random() * 3000,
+    );
+    return () => clearInterval(interval);
+  }, []);
   return (
     <span
-      className={glitching ? 'glitch-active' : ''}
-      style={{ position: 'relative', display: 'inline-block', ...style }}
-      data-text={typeof children === 'string' ? children : ''}
+      className={glitching ? "glitch-active" : ""}
+      style={{ position: "relative", display: "inline-block", ...style }}
+      data-text={typeof children === "string" ? children : ""}
     >
       {children}
     </span>
-  )
+  );
 }
 
 /* ── Magnetic Button ──────────────────────────────────────────── */
 function MagneticChip({ children }) {
-  const ref = useRef(null)
+  const ref = useRef(null);
   const handleMove = useCallback((e) => {
-    const el = ref.current
-    if (!el) return
-    const rect = el.getBoundingClientRect()
-    const cx = rect.left + rect.width / 2
-    const cy = rect.top + rect.height / 2
-    const dx = (e.clientX - cx) * 0.25
-    const dy = (e.clientY - cy) * 0.25
-    el.style.transform = `translate(${dx}px, ${dy}px)`
-  }, [])
+    const el = ref.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = (e.clientX - cx) * 0.25;
+    const dy = (e.clientY - cy) * 0.25;
+    el.style.transform = `translate(${dx}px, ${dy}px)`;
+  }, []);
   const handleLeave = useCallback(() => {
-    if (ref.current) ref.current.style.transform = 'translate(0,0)'
-  }, [])
+    if (ref.current) ref.current.style.transform = "translate(0,0)";
+  }, []);
   return (
     <span
       ref={ref}
       className="ab-chip"
       onMouseMove={handleMove}
       onMouseLeave={handleLeave}
-      style={{ transition: 'transform 0.3s cubic-bezier(.23,1,.32,1), border-color .2s, color .2s, background .2s' }}
+      style={{
+        transition:
+          "transform 0.3s cubic-bezier(.23,1,.32,1), border-color .2s, color .2s, background .2s",
+      }}
     >
       {children}
     </span>
-  )
+  );
 }
 
 export default function AboutSection() {
-  const [sectionRef, visible] = useReveal()
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
-  const [hoveredCard, setHoveredCard] = useState(null)
-  const [hoveredSpec, setHoveredSpec] = useState(null)
+  const [sectionRef, visible] = useReveal();
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [hoveredCard, setHoveredCard] = useState(null);
+  const [hoveredSpec, setHoveredSpec] = useState(null);
 
   useEffect(() => {
     const handleMouse = (e) => {
-      const { innerWidth: w, innerHeight: h } = window
-      setMousePos({ x: (e.clientX / w - 0.5) * 2, y: (e.clientY / h - 0.5) * 2 })
-    }
-    window.addEventListener('mousemove', handleMouse)
-    return () => window.removeEventListener('mousemove', handleMouse)
-  }, [])
+      const { innerWidth: w, innerHeight: h } = window;
+      setMousePos({
+        x: (e.clientX / w - 0.5) * 2,
+        y: (e.clientY / h - 0.5) * 2,
+      });
+    };
+    window.addEventListener("mousemove", handleMouse);
+    return () => window.removeEventListener("mousemove", handleMouse);
+  }, []);
 
   const techSpecs = [
-    { k: 'Frontend', v: 'React · Framer Motion · Tailwind CSS', icon: '⚛️'},
-    { k: 'Backend',  v: 'Node.js · Express · REST · Prisma',   icon: '⚙️'},
-    { k: 'Database', v: 'PostgreSQL · MongoDB · MySQL',         icon: '🗄️' },
-    { k: 'DevOps',   v: 'Git · Vercel · AWS',                  icon: '☁️' },
-    { k: 'Design',   v: 'Figma · Motion · Typography',         icon: '🎨' },
-  ]
+    { k: "Frontend", v: "React · Framer Motion · Tailwind CSS", icon: "⚛️" },
+    { k: "Backend", v: "Node.js · Express · REST · Prisma", icon: "⚙️" },
+    { k: "Database", v: "PostgreSQL · MongoDB · MySQL", icon: "🗄️" },
+    { k: "DevOps", v: "Git · Vercel · AWS", icon: "☁️" },
+    { k: "Design", v: "Figma · Motion · Typography", icon: "🎨" },
+  ];
 
-  const chips = ['React','Express','Node.js','Python','Tailwind CSS','PostgreSQL','MongoDB','Figma','TypeScript','MySQL', 'AWS', 'Git']
+  const chips = [
+    "React",
+    "Express",
+    "Node.js",
+    "Python",
+    "Tailwind CSS",
+    "PostgreSQL",
+    "MongoDB",
+    "Figma",
+    "TypeScript",
+    "MySQL",
+    "AWS",
+    "Git",
+  ];
 
   const profileCards = [
-    { emoji: '🎓', label: 'Student',       sub: "MIT ADT · Class of '27", color: '#38bdf8', accent: 'rgba(56,189,248,0.12)' },
-    { emoji: '💻', label: 'Developer',     sub: 'Full Stack Engineer',            color: '#E8002D', accent: 'rgba(232,0,45,0.12)' },
-    { emoji: '🏆', label: 'Problem Solver',sub: 'DSA & Competitive Prog.',         color: '#a78bfa', accent: 'rgba(167,139,250,0.12)' },
-  ]
+    {
+      emoji: "🎓",
+      label: "Student",
+      sub: "MIT ADT · Class of '27",
+      color: "#38bdf8",
+      accent: "rgba(56,189,248,0.12)",
+    },
+    {
+      emoji: "💻",
+      label: "Developer",
+      sub: "Full Stack Engineer",
+      color: "#E8002D",
+      accent: "rgba(232,0,45,0.12)",
+    },
+    {
+      emoji: "🏆",
+      label: "Problem Solver",
+      sub: "DSA & Competitive Prog.",
+      color: "#a78bfa",
+      accent: "rgba(167,139,250,0.12)",
+    },
+  ];
 
   const stats = [
-    { lbl: 'Experience', num: 3,   suffix: '+ Yrs' },
-    { lbl: 'Shipped',    num: 10,  suffix: '+ Projects' },
-    { lbl: 'Commits',    num: 200, suffix: '+' },
-    { lbl: 'Status',     val: 'OPEN', green: true },
-  ]
+    { lbl: "Experience", num: 3, suffix: "+ Yrs" },
+    { lbl: "Shipped", num: 10, suffix: "+ Projects" },
+    { lbl: "Commits", num: 200, suffix: "+" },
+    { lbl: "Status", val: "OPEN", green: true },
+  ];
 
   return (
     <>
@@ -404,12 +477,12 @@ export default function AboutSection() {
       <section
         id="about"
         ref={sectionRef}
-        className={`ab-section${visible ? ' ab-visible' : ''}`}
+        className={`ab-section${visible ? " ab-visible" : ""}`}
         style={{
-          position: 'relative',
-          background: '#080808',
-          overflow: 'hidden',
-          padding: '80px 56px 80px',
+          position: "relative",
+          background: "#080808",
+          overflow: "hidden",
+          padding: "80px 56px 80px",
           fontFamily: "'Barlow Condensed', sans-serif",
         }}
         aria-label="About me"
@@ -418,222 +491,418 @@ export default function AboutSection() {
         <ParticleField />
 
         {/* Scanline texture */}
-        <div aria-hidden="true" style={{
-          position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none',
-          background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px)',
-          opacity: 0.6,
-        }} />
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 1,
+            pointerEvents: "none",
+            background:
+              "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px)",
+            opacity: 0.6,
+          }}
+        />
 
         {/* Moving scanline */}
-        <div style={{ position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none', overflow: 'hidden' }}>
-          <div style={{
-            position: 'absolute', left: 0, right: 0, height: '80px',
-            background: 'linear-gradient(to bottom, transparent, rgba(232,0,45,0.015), transparent)',
-            animation: 'scanline 8s linear infinite',
-          }} />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 1,
+            pointerEvents: "none",
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              left: 0,
+              right: 0,
+              height: "80px",
+              background:
+                "linear-gradient(to bottom, transparent, rgba(232,0,45,0.015), transparent)",
+              animation: "scanline 8s linear infinite",
+            }}
+          />
         </div>
 
         {/* Grid overlay — parallax */}
-        <div aria-hidden="true" style={{
-          position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none',
-          backgroundImage: `
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 1,
+            pointerEvents: "none",
+            backgroundImage: `
             linear-gradient(to right,rgba(255,255,255,0.03) 1px,transparent 1px),
             linear-gradient(to bottom,rgba(255,255,255,0.03) 1px,transparent 1px)
           `,
-          backgroundSize: '80px 80px',
-          WebkitMaskImage: 'radial-gradient(ellipse 90% 90% at 50% 50%,black 10%,transparent 100%)',
-          maskImage: 'radial-gradient(ellipse 90% 90% at 50% 50%,black 10%,transparent 100%)',
-          transform: `translate(${mousePos.x * -8}px, ${mousePos.y * -8}px)`,
-          transition: 'transform 1s cubic-bezier(0.23,1,0.32,1)',
-        }} />
+            backgroundSize: "80px 80px",
+            WebkitMaskImage:
+              "radial-gradient(ellipse 90% 90% at 50% 50%,black 10%,transparent 100%)",
+            maskImage:
+              "radial-gradient(ellipse 90% 90% at 50% 50%,black 10%,transparent 100%)",
+            transform: `translate(${mousePos.x * -8}px, ${mousePos.y * -8}px)`,
+            transition: "transform 1s cubic-bezier(0.23,1,0.32,1)",
+          }}
+        />
 
         {/* Red glow — parallax */}
-        <div aria-hidden="true" style={{
-          position: 'absolute', bottom: -120, left: -100, zIndex: 2, pointerEvents: 'none',
-          width: 700, height: 520,
-          background: 'radial-gradient(ellipse, rgba(232,0,45,0.14) 0%, rgba(232,0,45,0.04) 40%, transparent 70%)',
-          animation: 'softGlow 7s ease-in-out infinite',
-          transform: `translate(${mousePos.x * 14}px, ${mousePos.y * 14}px)`,
-          transition: 'transform 1.4s cubic-bezier(0.23,1,0.32,1)',
-        }} />
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            bottom: -120,
+            left: -100,
+            zIndex: 2,
+            pointerEvents: "none",
+            width: 700,
+            height: 520,
+            background:
+              "radial-gradient(ellipse, rgba(232,0,45,0.14) 0%, rgba(232,0,45,0.04) 40%, transparent 70%)",
+            animation: "softGlow 7s ease-in-out infinite",
+            transform: `translate(${mousePos.x * 14}px, ${mousePos.y * 14}px)`,
+            transition: "transform 1.4s cubic-bezier(0.23,1,0.32,1)",
+          }}
+        />
 
         {/* Blue nebula — parallax */}
-        <div aria-hidden="true" style={{
-          position: 'absolute', top: 40, right: 80, zIndex: 2, pointerEvents: 'none',
-          width: 420, height: 420, borderRadius: '50%',
-          background: 'radial-gradient(ellipse at 40% 40%, rgba(56,189,248,0.08) 0%, rgba(232,0,45,0.05) 45%, transparent 70%)',
-          animation: 'nebula 9s ease-in-out infinite',
-          transform: `translate(${mousePos.x * -18}px, ${mousePos.y * -18}px)`,
-          transition: 'transform 1.8s cubic-bezier(0.23,1,0.32,1)',
-        }} />
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            top: 40,
+            right: 80,
+            zIndex: 2,
+            pointerEvents: "none",
+            width: 420,
+            height: 420,
+            borderRadius: "50%",
+            background:
+              "radial-gradient(ellipse at 40% 40%, rgba(56,189,248,0.08) 0%, rgba(232,0,45,0.05) 45%, transparent 70%)",
+            animation: "nebula 9s ease-in-out infinite",
+            transform: `translate(${mousePos.x * -18}px, ${mousePos.y * -18}px)`,
+            transition: "transform 1.8s cubic-bezier(0.23,1,0.32,1)",
+          }}
+        />
 
         {/* Purple nebula */}
-        <div aria-hidden="true" style={{
-          position: 'absolute', top: '40%', left: '40%', zIndex: 2, pointerEvents: 'none',
-          width: 300, height: 300, borderRadius: '50%',
-          background: 'radial-gradient(ellipse, rgba(167,139,250,0.05) 0%, transparent 70%)',
-          animation: 'nebula 11s ease-in-out infinite reverse',
-          transform: `translate(${mousePos.x * -10}px, ${mousePos.y * -10}px)`,
-          transition: 'transform 1.6s cubic-bezier(0.23,1,0.32,1)',
-        }} />
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            top: "40%",
+            left: "40%",
+            zIndex: 2,
+            pointerEvents: "none",
+            width: 300,
+            height: 300,
+            borderRadius: "50%",
+            background:
+              "radial-gradient(ellipse, rgba(167,139,250,0.05) 0%, transparent 70%)",
+            animation: "nebula 11s ease-in-out infinite reverse",
+            transform: `translate(${mousePos.x * -10}px, ${mousePos.y * -10}px)`,
+            transition: "transform 1.6s cubic-bezier(0.23,1,0.32,1)",
+          }}
+        />
 
         {/* Left accent stripe */}
-        <div aria-hidden="true" style={{
-          position: 'absolute', top: 0, left: 0, zIndex: 2, pointerEvents: 'none',
-          width: 3, height: '100%',
-          background: 'linear-gradient(to bottom, transparent, #E8002D 20%, #E8002D 80%, transparent)',
-          opacity: 0.6,
-        }} />
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            zIndex: 2,
+            pointerEvents: "none",
+            width: 3,
+            height: "100%",
+            background:
+              "linear-gradient(to bottom, transparent, #E8002D 20%, #E8002D 80%, transparent)",
+            opacity: 0.6,
+          }}
+        />
 
         {/* Corner accent TL */}
-        <div aria-hidden="true" style={{
-          position: 'absolute', top: 0, left: 0, zIndex: 3, pointerEvents: 'none',
-          width: 60, height: 60,
-          borderTop: '2px solid rgba(232,0,45,0.4)',
-          borderLeft: '2px solid rgba(232,0,45,0.4)',
-        }} />
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            zIndex: 3,
+            pointerEvents: "none",
+            width: 60,
+            height: 60,
+            borderTop: "2px solid rgba(232,0,45,0.4)",
+            borderLeft: "2px solid rgba(232,0,45,0.4)",
+          }}
+        />
 
         {/* Corner accent BR */}
-        <div aria-hidden="true" style={{
-          position: 'absolute', bottom: 0, right: 0, zIndex: 3, pointerEvents: 'none',
-          width: 60, height: 60,
-          borderBottom: '2px solid rgba(232,0,45,0.3)',
-          borderRight: '2px solid rgba(232,0,45,0.3)',
-        }} />
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            bottom: 0,
+            right: 0,
+            zIndex: 3,
+            pointerEvents: "none",
+            width: 60,
+            height: 60,
+            borderBottom: "2px solid rgba(232,0,45,0.3)",
+            borderRight: "2px solid rgba(232,0,45,0.3)",
+          }}
+        />
 
         {/* Bottom stripe */}
-        <div aria-hidden="true" style={{
-          position: 'absolute', bottom: 0, right: 0, zIndex: 2, pointerEvents: 'none',
-          height: 2, width: '50%',
-          background: 'linear-gradient(to left, #E8002D, transparent)',
-          opacity: 0.4,
-        }} />
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            bottom: 0,
+            right: 0,
+            zIndex: 2,
+            pointerEvents: "none",
+            height: 2,
+            width: "50%",
+            background: "linear-gradient(to left, #E8002D, transparent)",
+            opacity: 0.4,
+          }}
+        />
 
         {/* Ghost section number — parallax */}
-        <div aria-hidden="true" style={{
-          position: 'absolute', right: 40, top: '50%',
-          transform: `translateY(-55%) translate(${mousePos.x * 15}px, ${mousePos.y * 10}px)`,
-          zIndex: 2, pointerEvents: 'none', userSelect: 'none',
-          fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900,
-          fontSize: 'clamp(10rem,20vw,20rem)', letterSpacing: '-0.04em', lineHeight: 1,
-          color: 'rgba(255,255,255,0.018)',
-          transition: 'transform 1.4s cubic-bezier(0.23,1,0.32,1)',
-        }}>
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            right: 40,
+            top: "50%",
+            transform: `translateY(-55%) translate(${mousePos.x * 15}px, ${mousePos.y * 10}px)`,
+            zIndex: 2,
+            pointerEvents: "none",
+            userSelect: "none",
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontWeight: 900,
+            fontSize: "clamp(10rem,20vw,20rem)",
+            letterSpacing: "-0.04em",
+            lineHeight: 1,
+            color: "rgba(255,255,255,0.018)",
+            transition: "transform 1.4s cubic-bezier(0.23,1,0.32,1)",
+          }}
+        >
           02
         </div>
 
         {/* ── Main content ── */}
-        <div style={{ position: 'relative', zIndex: 10, maxWidth: 1100 }}>
-
+        <div style={{ position: "relative", zIndex: 10, maxWidth: 1100 }}>
           {/* Checker flag */}
-          <div className="ab-d0" style={{
-            width: 48, height: 8, marginBottom: 20, opacity: 0.18,
-            backgroundImage: 'repeating-conic-gradient(#fff 0% 25%, transparent 0% 50%)',
-            backgroundSize: '8px 8px',
-          }} />
+          <div
+            className="ab-d0"
+            style={{
+              width: 48,
+              height: 8,
+              marginBottom: 20,
+              opacity: 0.18,
+              backgroundImage:
+                "repeating-conic-gradient(#fff 0% 25%, transparent 0% 50%)",
+              backgroundSize: "8px 8px",
+            }}
+          />
 
           {/* Eyebrow badge */}
           <div className="ab-d0" style={{ marginBottom: 22 }}>
-            <span style={{
-              fontFamily: "'Share Tech Mono', monospace",
-              display: 'inline-flex', alignItems: 'center', gap: 12,
-              fontSize: '0.6rem', letterSpacing: '0.24em',
-              textTransform: 'uppercase', color: '#E8002D',
-            }}>
-              <span style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14 }}>
-                <span style={{
-                  position: 'absolute', width: 14, height: 14, borderRadius: '50%',
-                  border: '1px solid #E8002D',
-                  animation: 'pulseRing 2s ease-out infinite',
-                }} />
-                <span style={{
-                  position: 'absolute', width: 14, height: 14, borderRadius: '50%',
-                  border: '1px solid #E8002D',
-                  animation: 'pulseRing 2s ease-out infinite .6s',
-                }} />
-                <span style={{
-                  width: 6, height: 6, borderRadius: '50%', background: '#E8002D',
-                  animation: 'blink 1.4s ease-in-out infinite',
-                  flexShrink: 0,
-                }} />
+            <span
+              style={{
+                fontFamily: "'Share Tech Mono', monospace",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 12,
+                fontSize: "0.6rem",
+                letterSpacing: "0.24em",
+                textTransform: "uppercase",
+                color: "#E8002D",
+              }}
+            >
+              <span
+                style={{
+                  position: "relative",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: 14,
+                  height: 14,
+                }}
+              >
+                <span
+                  style={{
+                    position: "absolute",
+                    width: 14,
+                    height: 14,
+                    borderRadius: "50%",
+                    border: "1px solid #E8002D",
+                    animation: "pulseRing 2s ease-out infinite",
+                  }}
+                />
+                <span
+                  style={{
+                    position: "absolute",
+                    width: 14,
+                    height: 14,
+                    borderRadius: "50%",
+                    border: "1px solid #E8002D",
+                    animation: "pulseRing 2s ease-out infinite .6s",
+                  }}
+                />
+                <span
+                  style={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: "50%",
+                    background: "#E8002D",
+                    animation: "blink 1.4s ease-in-out infinite",
+                    flexShrink: 0,
+                  }}
+                />
               </span>
-              Sector 02 · About · <span style={{ color: '#444' }}>System Online</span>
+              Sector 02 · About ·{" "}
+              <span style={{ color: "#444" }}>System Online</span>
             </span>
           </div>
 
           {/* Heading */}
-          <h2 className="ab-d1" style={{
-            fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontStyle: 'italic',
-            fontSize: 'clamp(3.8rem,9.5vw,9rem)', lineHeight: 0.88,
-            letterSpacing: '-0.01em', textTransform: 'uppercase',
-            color: '#fff', marginBottom: 22, position: 'relative',
-          }}>
+          <h2
+            className="ab-d1"
+            style={{
+              fontFamily: "'Barlow Condensed', sans-serif",
+              fontWeight: 900,
+              fontStyle: "italic",
+              fontSize: "clamp(3.8rem,9.5vw,9rem)",
+              lineHeight: 0.84,
+              letterSpacing: "-0.01em",
+              textTransform: "uppercase",
+              color: "#fff",
+              marginBottom: 18,
+              position: "relative",
+            }}
+          >
             <GlitchText data-text="Hi, I'm a">Hi, I'm a</GlitchText>
             <br />
-            <span style={{ color: '#E8002D', position: 'relative', display: 'inline-block', lineHeight: 1 }}>
+            <span
+              style={{
+                color: "#E8002D",
+                position: "relative",
+                display: "inline-block",
+                lineHeight: 0.95,
+              }}
+            >
               Full‑Stack
               {/* Underline bar */}
-              <span style={{
-                position: 'absolute', bottom: -4, left: 0,
-                height: 3, background: 'linear-gradient(to right, #E8002D, rgba(232,0,45,0.1))',
-                display: 'block',
-                animation: visible ? 'barFill 1.2s cubic-bezier(.16,1,.3,1) .4s both' : 'none',
-                '--pct': '100%',
-                width: visible ? '100%' : '0%',
-                transition: 'width 1.2s cubic-bezier(.16,1,.3,1) .4s',
-              }} />
-            </span>
-            {' '}Developer
+              <span
+                style={{
+                  position: "absolute",
+                  bottom: -4,
+                  left: 0,
+                  height: 3,
+                  background:
+                    "linear-gradient(to right, #E8002D, rgba(232,0,45,0.1))",
+                  display: "block",
+                  transformOrigin: "left",
+                  animation: visible
+                    ? "barFill 1.2s cubic-bezier(.16,1,.3,1) .4s both"
+                    : "none",
+                  "--pct": "100%",
+                  width: visible ? "100%" : "0%",
+                }}
+              />
+            </span>{" "}
+            Developer
           </h2>
 
           {/* Sub */}
-          <p className="ab-d2" style={{
-            fontFamily: "'Share Tech Mono', monospace",
-            color: '#484848', fontSize: '0.72rem', lineHeight: 1.9,
-            maxWidth: 420, marginBottom: 56, letterSpacing: '0.05em',
-          }}>
-            Building fast, polished products at the intersection of engineering and design.
+          <p
+            className="ab-d2"
+            style={{
+              fontFamily: "'Share Tech Mono', monospace",
+              color: "#484848",
+              fontSize: "0.72rem",
+              lineHeight: 1.9,
+              maxWidth: 420,
+              marginBottom: 56,
+              letterSpacing: "0.05em",
+            }}
+          >
+            Building fast, polished products at the intersection of engineering
+            and design.
           </p>
 
           {/* Stats row */}
           <div
             className="ab-d3 ab-stats-row"
             style={{
-              display: 'flex', gap: 36, flexWrap: 'wrap',
-              padding: '18px 0 24px', marginBottom: 56,
-              borderTop: '1px solid rgba(255,255,255,0.08)',
-              position: 'relative',
+              display: "flex",
+              gap: 36,
+              flexWrap: "wrap",
+              padding: "18px 0 24px",
+              marginBottom: 56,
+              borderTop: "1px solid rgba(255,255,255,0.08)",
+              position: "relative",
             }}
           >
-            <div style={{
-              position: 'absolute', bottom: 0, left: 0, height: 1,
-              background: 'linear-gradient(to right, #E8002D 0%, rgba(232,0,45,0.3) 40%, transparent 70%)',
-              width: '55%', opacity: 0.35,
-            }} />
+            <div
+              style={{
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                height: 1,
+                background:
+                  "linear-gradient(to right, #E8002D 0%, rgba(232,0,45,0.3) 40%, transparent 70%)",
+                width: "55%",
+                opacity: 0.35,
+              }}
+            />
             {stats.map((s, i) => (
               <div
                 key={s.lbl}
                 className="ab-stat"
-                style={{ animation: visible ? `statCount .6s cubic-bezier(.16,1,.3,1) ${0.4 + i * 0.09}s both` : 'none' }}
+                style={{
+                  animation: visible
+                    ? `statCount .6s cubic-bezier(.16,1,.3,1) ${0.4 + i * 0.09}s both`
+                    : "none",
+                }}
               >
-                <span style={{
-                  fontFamily: "'Share Tech Mono', monospace",
-                  fontSize: '0.5rem', letterSpacing: '0.22em',
-                  textTransform: 'uppercase', color: '#383838',
-                }}>
+                <span
+                  style={{
+                    fontFamily: "'Share Tech Mono', monospace",
+                    fontSize: "0.5rem",
+                    letterSpacing: "0.22em",
+                    textTransform: "uppercase",
+                    color: "#383838",
+                  }}
+                >
                   {s.lbl}
                 </span>
                 <span
-                  className={`ab-stat-num${s.green ? ' green' : ''}`}
+                  className={`ab-stat-num${s.green ? " green" : ""}`}
                   style={{
-                    fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700,
-                    fontSize: '1.6rem', letterSpacing: '-0.01em',
-                    color: s.green ? '#39d353' : '#b8b8b8',
-                    textShadow: s.green ? '0 0 20px rgba(57,211,83,0.4)' : 'none',
-                    transition: 'color .25s, text-shadow .25s',
+                    fontFamily: "'Barlow Condensed', sans-serif",
+                    fontWeight: 700,
+                    fontSize: "1.6rem",
+                    letterSpacing: "-0.01em",
+                    color: s.green ? "#39d353" : "#b8b8b8",
+                    textShadow: s.green
+                      ? "0 0 20px rgba(57,211,83,0.4)"
+                      : "none",
+                    transition: "color .25s, text-shadow .25s",
                   }}
                 >
-                  {s.num != null ? <Counter target={s.num} suffix={s.suffix} /> : s.val}
+                  {s.num != null ? (
+                    <Counter target={s.num} suffix={s.suffix} />
+                  ) : (
+                    s.val
+                  )}
                 </span>
               </div>
             ))}
@@ -643,9 +912,10 @@ export default function AboutSection() {
           <div
             className="ab-d4"
             style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-              gap: 10, marginBottom: 60,
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+              gap: 10,
+              marginBottom: 60,
             }}
           >
             {profileCards.map((card, i) => (
@@ -653,50 +923,70 @@ export default function AboutSection() {
                 key={card.label}
                 className="ab-card"
                 style={{
-                  '--card-color': card.color,
-                  animation: visible ? `heroIn .8s cubic-bezier(.16,1,.3,1) ${0.3 + i * 0.1}s both` : 'none',
+                  "--card-color": card.color,
+                  animation: visible
+                    ? `heroIn .8s cubic-bezier(.16,1,.3,1) ${0.3 + i * 0.1}s both`
+                    : "none",
                 }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.borderColor = card.color + '55'
-                  e.currentTarget.style.background = card.accent
-                  setHoveredCard(i)
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = card.color + "55";
+                  e.currentTarget.style.background = card.accent;
+                  setHoveredCard(i);
                 }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.025)'
-                  setHoveredCard(null)
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)";
+                  e.currentTarget.style.background = "rgba(255,255,255,0.025)";
+                  setHoveredCard(null);
                 }}
               >
-                <span className="ab-card-icon" style={{ fontSize: '1.8rem', lineHeight: 1, flexShrink: 0 }}>
+                <span
+                  className="ab-card-icon"
+                  style={{ fontSize: "1.8rem", lineHeight: 1, flexShrink: 0 }}
+                >
                   {card.emoji}
                 </span>
                 <div>
-                  <p style={{
-                    fontFamily: "'Share Tech Mono', monospace",
-                    fontSize: '0.52rem', letterSpacing: '0.2em', textTransform: 'uppercase',
-                    color: card.color, marginBottom: 6,
-                    transition: 'letter-spacing .3s',
-                    letterSpacing: hoveredCard === i ? '0.3em' : '0.2em',
-                  }}>
+                  <p
+                    style={{
+                      fontFamily: "'Share Tech Mono', monospace",
+                      fontSize: "0.52rem",
+                      letterSpacing: "0.2em",
+                      textTransform: "uppercase",
+                      color: card.color,
+                      marginBottom: 6,
+                      transition: "letter-spacing .3s",
+                      letterSpacing: hoveredCard === i ? "0.3em" : "0.2em",
+                    }}
+                  >
                     {card.label}
                   </p>
-                  <p style={{
-                    fontFamily: "'Barlow Condensed', sans-serif",
-                    color: '#5a5a5a', fontSize: '0.95rem', lineHeight: 1.4, fontWeight: 400,
-                  }}>
+                  <p
+                    style={{
+                      fontFamily: "'Barlow Condensed', sans-serif",
+                      color: "#5a5a5a",
+                      fontSize: "0.95rem",
+                      lineHeight: 1.4,
+                      fontWeight: 400,
+                    }}
+                  >
                     {card.sub}
                   </p>
                 </div>
                 {/* Holographic corner */}
-                <div style={{
-                  position: 'absolute', top: 0, right: 0,
-                  width: 0, height: 0,
-                  borderStyle: 'solid',
-                  borderWidth: '0 16px 16px 0',
-                  borderColor: `transparent ${card.color}44 transparent transparent`,
-                  transition: 'opacity .3s',
-                  opacity: hoveredCard === i ? 1 : 0.3,
-                }} />
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    right: 0,
+                    width: 0,
+                    height: 0,
+                    borderStyle: "solid",
+                    borderWidth: "0 16px 16px 0",
+                    borderColor: `transparent ${card.color}44 transparent transparent`,
+                    transition: "opacity .3s",
+                    opacity: hoveredCard === i ? 1 : 0.3,
+                  }}
+                />
               </div>
             ))}
           </div>
@@ -704,51 +994,99 @@ export default function AboutSection() {
           {/* Two-column grid */}
           <div
             className="ab-grid"
-            style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 52, alignItems: 'start' }}
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: 52,
+              alignItems: "start",
+            }}
           >
             {/* Bio + chips */}
             <div className="ab-d5">
-              <p style={{
-                fontFamily: "'Barlow Condensed', sans-serif",
-                color: '#5a5a5a', fontSize: '1.08rem', lineHeight: 1.9, marginBottom: 18, fontWeight: 400,
-              }}>
-                I'm a{' '}
-                <strong style={{
-                  fontWeight: 700, color: '#c8c8c8',
-                  background: 'linear-gradient(90deg, #c8c8c8 0%, #fff 30%, #E8002D 60%, #fff 80%, #c8c8c8 100%)',
-                  backgroundSize: '300% auto',
-                  WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                  animation: 'shimmer 4s linear infinite',
-                }}>
+              <p
+                style={{
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  color: "#5a5a5a",
+                  fontSize: "1.08rem",
+                  lineHeight: 1.9,
+                  marginBottom: 18,
+                  fontWeight: 400,
+                }}
+              >
+                I'm a{" "}
+                <strong
+                  style={{
+                    fontWeight: 700,
+                    color: "#c8c8c8",
+                    background:
+                      "linear-gradient(90deg, #c8c8c8 0%, #fff 30%, #E8002D 60%, #fff 80%, #c8c8c8 100%)",
+                    backgroundSize: "300% auto",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    animation: "shimmer 4s linear infinite",
+                  }}
+                >
                   full-stack developer
-                </strong>{' '}
-                who obsesses over load times, clean architecture, and shipping products that feel as good as they perform.
+                </strong>{" "}
+                who obsesses over load times, clean architecture, and shipping
+                products that feel as good as they perform.
               </p>
-              <p style={{
-                fontFamily: "'Barlow Condensed', sans-serif",
-                color: '#5a5a5a', fontSize: '1.08rem', lineHeight: 1.9, marginBottom: 40,
-              }}>
-                Currently pursuing my degree at{' '}
-                <strong style={{ color: '#aaa', fontWeight: 700 }}>MIT Art Design and Technology University</strong>,
-                graduating in <strong style={{ color: '#aaa', fontWeight: 700 }}>2027</strong>.
-                Every detail matters — every millisecond counts.
+              <p
+                style={{
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  color: "#5a5a5a",
+                  fontSize: "1.08rem",
+                  lineHeight: 1.9,
+                  marginBottom: 40,
+                }}
+              >
+                Currently pursuing my degree at{" "}
+                <strong style={{ color: "#aaa", fontWeight: 700 }}>
+                  MIT Art Design and Technology University
+                </strong>
+                , graduating in{" "}
+                <strong style={{ color: "#aaa", fontWeight: 700 }}>2027</strong>
+                . Every detail matters — every millisecond counts.
               </p>
 
-              <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: 24 }}>
-                <p style={{
-                  fontFamily: "'Share Tech Mono', monospace",
-                  fontSize: '0.5rem', letterSpacing: '0.24em',
-                  textTransform: 'uppercase', color: '#383838', marginBottom: 16,
-                }}>
+              <div
+                style={{
+                  borderTop: "1px solid rgba(255,255,255,0.07)",
+                  paddingTop: 24,
+                }}
+              >
+                <p
+                  style={{
+                    fontFamily: "'Share Tech Mono', monospace",
+                    fontSize: "0.5rem",
+                    letterSpacing: "0.24em",
+                    textTransform: "uppercase",
+                    color: "#383838",
+                    marginBottom: 16,
+                  }}
+                >
                   Tech Stack ·
-                  <span style={{ color: '#E8002D', marginLeft: 6 }}>{chips.length} modules loaded</span>
+                  <span style={{ color: "#E8002D", marginLeft: 6 }}>
+                    {chips.length} modules loaded
+                  </span>
                 </p>
-                <ul style={{ display: 'flex', flexWrap: 'wrap', gap: 8, listStyle: 'none', padding: 0, margin: 0 }}>
+                <ul
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 8,
+                    listStyle: "none",
+                    padding: 0,
+                    margin: 0,
+                  }}
+                >
                   {chips.map((chip, i) => (
                     <li
                       key={chip}
                       style={{
-                        animation: visible ? `heroIn .5s cubic-bezier(.16,1,.3,1) ${0.6 + i * 0.05}s both` : 'none',
+                        animation: visible
+                          ? `heroIn .5s cubic-bezier(.16,1,.3,1) ${0.6 + i * 0.05}s both`
+                          : "none",
                         opacity: 0,
                       }}
                     >
@@ -763,99 +1101,134 @@ export default function AboutSection() {
             <div
               className="ab-d6"
               style={{
-                border: '1px solid rgba(255,255,255,0.07)',
-                background: 'rgba(255,255,255,0.018)',
-                overflow: 'hidden',
-                position: 'relative',
+                border: "1px solid rgba(255,255,255,0.07)",
+                background: "rgba(255,255,255,0.018)",
+                overflow: "hidden",
+                position: "relative",
               }}
             >
               {/* Panel header */}
-              <div style={{
-                padding: '12px 20px',
-                borderBottom: '1px solid rgba(255,255,255,0.07)',
-                background: 'rgba(255,255,255,0.02)',
-                display: 'flex', alignItems: 'center', gap: 10,
-              }}>
-                <span style={{
-                  width: 6, height: 6, borderRadius: '50%',
-                  background: '#E8002D', flexShrink: 0,
-                  animation: 'blink 1.4s ease-in-out infinite',
-                }} />
-                <p style={{
-                  fontFamily: "'Share Tech Mono', monospace",
-                  fontSize: '0.5rem', letterSpacing: '0.22em',
-                  textTransform: 'uppercase', color: '#4a4a4a', margin: 0,
-                }}>
+              <div
+                style={{
+                  padding: "12px 20px",
+                  borderBottom: "1px solid rgba(255,255,255,0.07)",
+                  background: "rgba(255,255,255,0.02)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                }}
+              >
+                <span
+                  style={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: "50%",
+                    background: "#E8002D",
+                    flexShrink: 0,
+                    animation: "blink 1.4s ease-in-out infinite",
+                  }}
+                />
+                <p
+                  style={{
+                    fontFamily: "'Share Tech Mono', monospace",
+                    fontSize: "0.5rem",
+                    letterSpacing: "0.22em",
+                    textTransform: "uppercase",
+                    color: "#4a4a4a",
+                    margin: 0,
+                  }}
+                >
                   Skills Breakdown
                 </p>
-                <span style={{
-                  marginLeft: 'auto',
-                  fontFamily: "'Share Tech Mono', monospace",
-                  fontSize: '0.44rem', color: '#252525', letterSpacing: '0.1em',
-                }}>
+                <span
+                  style={{
+                    marginLeft: "auto",
+                    fontFamily: "'Share Tech Mono', monospace",
+                    fontSize: "0.44rem",
+                    color: "#252525",
+                    letterSpacing: "0.1em",
+                  }}
+                >
                   ─ ─ ─ ─ ─ ─
                 </span>
               </div>
 
               {/* Rows with progress bars */}
-              <dl style={{ margin: 0, padding: '4px 0' }}>
+              <dl style={{ margin: 0, padding: "4px 0" }}>
                 {techSpecs.map((row, i) => (
                   <div
                     key={row.k}
                     className="ab-spec-row"
                     style={{
-                      borderBottom: i !== techSpecs.length - 1
-                        ? '1px solid rgba(255,255,255,0.04)'
-                        : 'none',
-                      flexDirection: 'column',
+                      borderBottom:
+                        i !== techSpecs.length - 1
+                          ? "1px solid rgba(255,255,255,0.04)"
+                          : "none",
+                      flexDirection: "column",
                       gap: 8,
-                      animation: visible ? `specEnter .6s cubic-bezier(.16,1,.3,1) ${0.6 + i * 0.1}s both` : 'none',
+                      animation: visible
+                        ? `specEnter .6s cubic-bezier(.16,1,.3,1) ${0.6 + i * 0.1}s both`
+                        : "none",
                       opacity: 0,
                     }}
                     onMouseEnter={() => setHoveredSpec(i)}
                     onMouseLeave={() => setHoveredSpec(null)}
                   >
                     {/* Row top */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div
+                      style={{ display: "flex", alignItems: "center", gap: 12 }}
+                    >
                       <span className="ab-spec-icon">{row.icon}</span>
                       <dt
                         className="ab-spec-key"
                         style={{
                           fontFamily: "'Share Tech Mono', monospace",
-                          fontSize: '0.5rem', letterSpacing: '0.18em',
-                          textTransform: 'uppercase', color: '#363636',
-                          width: 70, flexShrink: 0,
-                          transition: 'color .2s',
+                          fontSize: "0.5rem",
+                          letterSpacing: "0.18em",
+                          textTransform: "uppercase",
+                          color: "#363636",
+                          width: 70,
+                          flexShrink: 0,
+                          transition: "color .2s",
                         }}
                       >
                         {row.k}
                       </dt>
-                      <dd style={{
-                        fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 400,
-                        fontSize: '0.92rem', color: '#5c5c5c',
-                        lineHeight: 1.4, margin: 0, letterSpacing: '0.02em',
-                        flex: 1,
-                      }}>
+                      <dd
+                        style={{
+                          fontFamily: "'Barlow Condensed', sans-serif",
+                          fontWeight: 400,
+                          fontSize: "0.92rem",
+                          color: "#5c5c5c",
+                          lineHeight: 1.4,
+                          margin: 0,
+                          letterSpacing: "0.02em",
+                          flex: 1,
+                        }}
+                      >
                         {row.v}
                       </dd>
                     </div>
                     {/* Progress bar */}
-                    <div style={{
-                      height: 2,
-                      background: 'rgba(255,255,255,0.05)',
-                      position: 'relative',
-                      overflow: 'hidden',
-                      marginLeft: 6,
-                    }}>
+                    <div
+                      style={{
+                        height: 2,
+                        background: "rgba(255,255,255,0.05)",
+                        position: "relative",
+                        overflow: "hidden",
+                        marginLeft: 6,
+                      }}
+                    >
                       <div
                         className="ab-bar-fill"
                         style={{
-                          height: '100%',
-                          width: visible ? `${row.pct}%` : '0%',
+                          height: "100%",
+                          width: visible ? `${row.pct}%` : "0%",
                           transition: `width 1.4s cubic-bezier(.23,1,.32,1) ${0.7 + i * 0.12}s`,
-                          background: hoveredSpec === i
-                            ? `linear-gradient(90deg, #E8002D, #ff6b8a)`
-                            : `linear-gradient(90deg, #E8002D, rgba(232,0,45,0.4))`,
+                          background:
+                            hoveredSpec === i
+                              ? `linear-gradient(90deg, #E8002D, #ff6b8a)`
+                              : `linear-gradient(90deg, #E8002D, rgba(232,0,45,0.4))`,
                         }}
                       />
                     </div>
@@ -864,25 +1237,33 @@ export default function AboutSection() {
               </dl>
 
               {/* Bottom accent */}
-              <div style={{
-                height: 2,
-                background: 'linear-gradient(to right, #E8002D, rgba(232,0,45,0.1), transparent)',
-                opacity: 0.45,
-              }} />
+              <div
+                style={{
+                  height: 2,
+                  background:
+                    "linear-gradient(to right, #E8002D, rgba(232,0,45,0.1), transparent)",
+                  opacity: 0.45,
+                }}
+              />
 
               {/* Corner TL accent */}
-              <div style={{
-                position: 'absolute', top: 0, right: 0,
-                width: 0, height: 0,
-                borderStyle: 'solid',
-                borderWidth: '0 16px 16px 0',
-                borderColor: 'transparent #E8002D transparent transparent',
-                opacity: 0.4,
-              }} />
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  right: 0,
+                  width: 0,
+                  height: 0,
+                  borderStyle: "solid",
+                  borderWidth: "0 16px 16px 0",
+                  borderColor: "transparent #E8002D transparent transparent",
+                  opacity: 0.4,
+                }}
+              />
             </div>
           </div>
         </div>
       </section>
     </>
-  )
+  );
 }

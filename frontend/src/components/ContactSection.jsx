@@ -1,24 +1,46 @@
-import { ArrowUpRight, Radio } from 'lucide-react'
-import { useState, useRef, useEffect } from 'react'
+import { ArrowUpRight, Radio } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 
 const GitHubIcon = () => (
-  <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15" aria-hidden="true">
+  <svg
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    width="15"
+    height="15"
+    aria-hidden="true"
+  >
     <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
   </svg>
-)
+);
 
 const LinkedInIcon = () => (
-  <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15" aria-hidden="true">
+  <svg
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    width="15"
+    height="15"
+    aria-hidden="true"
+  >
     <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
   </svg>
-)
+);
 
 const MailIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="15" height="15" aria-hidden="true">
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    width="15"
+    height="15"
+    aria-hidden="true"
+  >
     <rect x="2" y="4" width="20" height="16" rx="2" />
     <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
   </svg>
-)
+);
 
 const style = `
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Barlow+Condensed:wght@300;400;600;700&family=Share+Tech+Mono&display=swap');
@@ -248,7 +270,7 @@ const style = `
     font-weight: 900;
     font-style: italic;
     font-size: clamp(3.5rem, 9vw, 8rem);
-    line-height: 1.05;
+    line-height: 0.92;
     letter-spacing: 0.01em;
     text-transform: uppercase;
     color: var(--white);
@@ -288,7 +310,7 @@ const style = `
     animation: cs-glitch-clip-2 .15s steps(1) both, cs-glitch-x-2 .15s steps(1) both;
   }
 
-  .cs-headline .cs-red { color: var(--red); position: relative; display: inline-block; line-height: 1; }
+  .cs-headline .cs-red { color: var(--red); position: relative; display: inline-block; line-height: 0.94; }
 
   .cs-headline .cs-red::after {
     content: '';
@@ -729,95 +751,124 @@ const style = `
       min-width: 130px;
     }
   }
-`
+`;
 
-function GlitchText({ children, className = '' }) {
-  const [glitching, setGlitching] = useState(false)
+function GlitchText({ children, className = "" }) {
+  const [glitching, setGlitching] = useState(false);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setGlitching(true)
-      setTimeout(() => setGlitching(false), 180)
-    }, 3800 + Math.random() * 2600)
+    const interval = setInterval(
+      () => {
+        setGlitching(true);
+        setTimeout(() => setGlitching(false), 180);
+      },
+      3800 + Math.random() * 2600,
+    );
 
-    return () => clearInterval(interval)
-  }, [])
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <span
-      className={`${className} ${glitching ? 'cs-glitch-active' : ''}`.trim()}
-      style={{ position: 'relative', display: 'inline-block' }}
-      data-text={typeof children === 'string' ? children : ''}
+      className={`${className} ${glitching ? "cs-glitch-active" : ""}`.trim()}
+      style={{ position: "relative", display: "inline-block" }}
+      data-text={typeof children === "string" ? children : ""}
     >
       {children}
     </span>
-  )
+  );
 }
 
 export default function ContactSection() {
-  const sectionRef = useRef(null)
-  const [values, setValues] = useState({ name: '', email: '', subject: '', message: '' })
-  const [focused, setFocused] = useState(null)
-  const [sent, setSent] = useState(false)
-  const [sending, setSending] = useState(false)
-  const [visible, setVisible] = useState(false)
-  const [hoveredLink, setHoveredLink] = useState(null)
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
-  const msgLen = values.message.length
+  const sectionRef = useRef(null);
+  const [values, setValues] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+  const [focused, setFocused] = useState(null);
+  const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [hoveredLink, setHoveredLink] = useState(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const msgLen = values.message.length;
 
   useEffect(() => {
-    const section = sectionRef.current
-    if (!section) return undefined
+    const section = sectionRef.current;
+    if (!section) return undefined;
 
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setVisible(true)
-        observer.disconnect()
-      }
-    }, { threshold: 0.2 })
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.2 },
+    );
 
-    observer.observe(section)
-    return () => observer.disconnect()
-  }, [])
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
-    const section = sectionRef.current
-    if (!section) return undefined
+    const section = sectionRef.current;
+    if (!section) return undefined;
 
     const handleMouseMove = (e) => {
-      const rect = section.getBoundingClientRect()
-      const mx = ((e.clientX - rect.left) / rect.width - 0.5) * 2
-      const my = ((e.clientY - rect.top) / rect.height - 0.5) * 2
-      setMousePos({ x: mx, y: my })
-    }
+      const rect = section.getBoundingClientRect();
+      const mx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+      const my = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+      setMousePos({ x: mx, y: my });
+    };
 
-    const resetMouse = () => setMousePos({ x: 0, y: 0 })
+    const resetMouse = () => setMousePos({ x: 0, y: 0 });
 
-    section.addEventListener('mousemove', handleMouseMove)
-    section.addEventListener('mouseleave', resetMouse)
+    section.addEventListener("mousemove", handleMouseMove);
+    section.addEventListener("mouseleave", resetMouse);
 
     return () => {
-      section.removeEventListener('mousemove', handleMouseMove)
-      section.removeEventListener('mouseleave', resetMouse)
-    }
-  }, [])
+      section.removeEventListener("mousemove", handleMouseMove);
+      section.removeEventListener("mouseleave", resetMouse);
+    };
+  }, []);
 
   const links = [
-    { icon: MailIcon, lbl: 'Email', val: 'sohamhipparkar09@gmail.com', href: 'mailto:sohamhipparkar09@gmail.com' },
-    { icon: GitHubIcon, lbl: 'GitHub', val: 'github.com/sohamhipparkar', href: 'https://github.com/sohamhipparkar' },
-    { icon: LinkedInIcon, lbl: 'LinkedIn', val: 'linkedin.com/in/soham-hipparkar', href: 'https://linkedin.com/in/soham-hipparkar' },
-  ]
+    {
+      icon: MailIcon,
+      lbl: "Email",
+      val: "sohamhipparkar09@gmail.com",
+      href: "mailto:sohamhipparkar09@gmail.com",
+    },
+    {
+      icon: GitHubIcon,
+      lbl: "GitHub",
+      val: "github.com/sohamhipparkar",
+      href: "https://github.com/sohamhipparkar",
+    },
+    {
+      icon: LinkedInIcon,
+      lbl: "LinkedIn",
+      val: "linkedin.com/in/soham-hipparkar",
+      href: "https://linkedin.com/in/soham-hipparkar",
+    },
+  ];
 
   const fields = [
-    { key: 'name', type: 'text', label: 'Driver Name' },
-    { key: 'email', type: 'email', label: 'Team Radio Frequency' },
-    { key: 'subject', type: 'text', label: 'Subject' },
-  ]
+    { key: "name", type: "text", label: "Driver Name" },
+    { key: "email", type: "email", label: "Team Radio Frequency" },
+    { key: "subject", type: "text", label: "Subject" },
+  ];
 
   function handleSend() {
-    if (sending) return
-    setSending(true)
-    setTimeout(() => { setSending(false); setSent(true) }, 1600)
+    if (sending) return;
+    setSending(true);
+    setTimeout(() => {
+      setSending(false);
+      setSent(true);
+    }, 1600);
   }
 
   return (
@@ -826,8 +877,11 @@ export default function ContactSection() {
       <section
         id="contact"
         ref={sectionRef}
-        className={`cs-root${visible ? ' cs-visible' : ''}`}
-        style={{ '--mx': `${mousePos.x * 10}px`, '--my': `${mousePos.y * 10}px` }}
+        className={`cs-root${visible ? " cs-visible" : ""}`}
+        style={{
+          "--mx": `${mousePos.x * 10}px`,
+          "--my": `${mousePos.y * 10}px`,
+        }}
       >
         <div className="cs-bg-grid" />
         <div className="cs-bg-stripe" />
@@ -850,17 +904,20 @@ export default function ContactSection() {
           {/* LEFT */}
           <div className="cs-left">
             <h2 className="cs-headline">
-              <GlitchText>Ready to build</GlitchText><br /><span className="cs-red">something</span> fast?
+              <GlitchText>Ready to build</GlitchText>
+              <br />
+              <span className="cs-red">something</span> fast?
             </h2>
             <p className="cs-desc">
-              Open to new projects, collaborations, and opportunities. Drop me a message — I respond quickly. Always.
+              Open to new projects, collaborations, and opportunities. Drop me a
+              message — I respond quickly. Always.
             </p>
             <div className="cs-links">
               {links.map(({ icon: Icon, lbl, val, href }) => (
                 <a
                   key={lbl}
                   href={href}
-                  className={`cs-link${hoveredLink === lbl ? ' cs-link-hot' : ''}`}
+                  className={`cs-link${hoveredLink === lbl ? " cs-link-hot" : ""}`}
                   onMouseEnter={() => setHoveredLink(lbl)}
                   onMouseLeave={() => setHoveredLink(null)}
                 >
@@ -887,7 +944,9 @@ export default function ContactSection() {
                   <Radio size={22} color="var(--red)" />
                 </div>
                 <div className="cs-sent-title">Transmission Sent</div>
-                <div className="cs-sent-sub">Signal received — I'll be in touch shortly</div>
+                <div className="cs-sent-sub">
+                  Signal received — I'll be in touch shortly
+                </div>
               </div>
             ) : (
               <>
@@ -895,12 +954,15 @@ export default function ContactSection() {
                   <span className="cs-form-title">Pit Wall Form</span>
                   <span className="cs-form-status">
                     <span className="cs-status-dot" />
-                    {sending ? 'Transmitting...' : 'Channel Open'}
+                    {sending ? "Transmitting..." : "Channel Open"}
                   </span>
                 </div>
 
                 {fields.map(({ key, type, label }) => (
-                  <div key={key} className={`cs-field${focused === key ? ' cs-active' : ''}${values[key] ? ' cs-has-value' : ''}`}>
+                  <div
+                    key={key}
+                    className={`cs-field${focused === key ? " cs-active" : ""}${values[key] ? " cs-has-value" : ""}`}
+                  >
                     <span className="cs-field-label">{label}</span>
                     <input
                       type={type}
@@ -908,31 +970,47 @@ export default function ContactSection() {
                       placeholder={label}
                       onFocus={() => setFocused(key)}
                       onBlur={() => setFocused(null)}
-                      onChange={e => setValues(v => ({ ...v, [key]: e.target.value }))}
+                      onChange={(e) =>
+                        setValues((v) => ({ ...v, [key]: e.target.value }))
+                      }
                     />
                     <div className="cs-field-line" />
                   </div>
                 ))}
 
-                <div className={`cs-field${focused === 'message' ? ' cs-active' : ''}${values.message ? ' cs-has-value' : ''}`}>
+                <div
+                  className={`cs-field${focused === "message" ? " cs-active" : ""}${values.message ? " cs-has-value" : ""}`}
+                >
                   <span className="cs-field-label">Your Message</span>
                   <textarea
                     placeholder="Your Message"
                     rows={5}
                     maxLength={500}
                     value={values.message}
-                    onFocus={() => setFocused('message')}
+                    onFocus={() => setFocused("message")}
                     onBlur={() => setFocused(null)}
-                    onChange={e => setValues(v => ({ ...v, message: e.target.value }))}
+                    onChange={(e) =>
+                      setValues((v) => ({ ...v, message: e.target.value }))
+                    }
                   />
                   <div className="cs-field-line" />
                 </div>
 
                 <div className="cs-form-footer">
-                  <span className={`cs-char-count${msgLen > 450 ? ' warn' : ''}`}>{String(msgLen).padStart(3, '0')} / 500 CHARS</span>
-                  <button className="cs-btn" onClick={handleSend} disabled={sending}>
-                    {sending ? 'Transmitting' : 'Send Transmission'}
-                    <span className="cs-btn-icon"><ArrowUpRight size={13} /></span>
+                  <span
+                    className={`cs-char-count${msgLen > 450 ? " warn" : ""}`}
+                  >
+                    {String(msgLen).padStart(3, "0")} / 500 CHARS
+                  </span>
+                  <button
+                    className="cs-btn"
+                    onClick={handleSend}
+                    disabled={sending}
+                  >
+                    {sending ? "Transmitting" : "Send Transmission"}
+                    <span className="cs-btn-icon">
+                      <ArrowUpRight size={13} />
+                    </span>
                   </button>
                 </div>
               </>
@@ -945,18 +1023,18 @@ export default function ContactSection() {
         {/* TELEMETRY BAR */}
         <div className="cs-telemetry">
           {[
-            { k: 'STATUS', v: 'AVAILABLE', live: true },
-            { k: 'RESPONSE TIME', v: '< 24H' },
-            { k: 'LOCATION', v: 'PUNE, IN' },
-            { k: 'TIMEZONE', v: 'IST +05:30' },
+            { k: "STATUS", v: "AVAILABLE", live: true },
+            { k: "RESPONSE TIME", v: "< 24H" },
+            { k: "LOCATION", v: "PUNE, IN" },
+            { k: "TIMEZONE", v: "IST +05:30" },
           ].map(({ k, v, live }) => (
             <div key={k} className="cs-tele-item">
               <span className="cs-tele-key">{k}</span>
-              <span className={`cs-tele-val${live ? ' live' : ''}`}>{v}</span>
+              <span className={`cs-tele-val${live ? " live" : ""}`}>{v}</span>
             </div>
           ))}
         </div>
       </section>
     </>
-  )
+  );
 }

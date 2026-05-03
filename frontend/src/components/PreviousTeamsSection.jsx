@@ -495,8 +495,13 @@ export default function PreviousTeamsSection() {
           bottom: -4px !important;
         }
 
+        .tl-header-fix h2 {
+          line-height: 0.82 !important;
+          margin-bottom: 14px !important;
+        }
+
         .tl-header-fix h2 > span {
-          line-height: 1;
+          line-height: 0.9;
         }
       `}</style>
 

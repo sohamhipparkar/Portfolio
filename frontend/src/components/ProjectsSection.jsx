@@ -764,8 +764,13 @@ export default function ProjectsSection({ projects }) {
           bottom: -4px !important;
         }
 
+        .proj-header-fix h2 {
+          line-height: 0.82 !important;
+          margin-bottom: 14px !important;
+        }
+
         .proj-header-fix h2 > span {
-          line-height: 1;
+          line-height: 0.9;
         }
 
         @media (prefers-reduced-motion: reduce) {
