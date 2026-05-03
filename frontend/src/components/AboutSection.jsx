@@ -467,10 +467,14 @@ export default function AboutSection() {
           opacity: 0.5;
         }
 
+        .ab-hi-gap { display: block; margin-bottom: 0.04em }
+
         @media (max-width: 768px) {
           .ab-grid { grid-template-columns: 1fr !important }
           .ab-stats-row { flex-wrap: wrap !important; gap: 20px !important }
           .ab-section { padding: 48px 20px 64px !important }
+          .ab-hi-gap { margin-bottom: 0.12em }
+          .ab-fullstack-gap { margin-bottom: 6px }
         }
       `}</style>
 
@@ -788,9 +792,13 @@ export default function AboutSection() {
               position: "relative",
             }}
           >
-            <GlitchText data-text="Hi, I'm a">Hi, I'm a</GlitchText>
-            <br />
+            <span className="ab-hi-gap">
+              <GlitchText data-text="Hi, I'm a" style={{ display: "block" }}>
+                Hi, I'm a
+              </GlitchText>
+            </span>
             <span
+              className="ab-fullstack-gap"
               style={{
                 color: "#E8002D",
                 position: "relative",
