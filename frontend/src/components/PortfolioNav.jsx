@@ -491,7 +491,7 @@ const styles = `
   }
 `;
 
-const sections = ["about", "work", "projects", "contact"];
+const sections = ["about", "work", "tech", "projects"];
 
 export default function PortfolioNav({ scrollY: scrollYProp, onNavigate, logoImg }) {
   const [scrollY, setScrollY] = useState(scrollYProp ?? 0);

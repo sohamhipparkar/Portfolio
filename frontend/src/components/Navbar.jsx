@@ -1,32 +1,42 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from "react";
 
 // ── placeholder logo (replace with: import logo from '../assets/logo.png') ──
-const logo = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='18' fill='%23E8002D' opacity='.15' stroke='%23E8002D' stroke-width='1'/%3E%3Ctext x='20' y='26' text-anchor='middle' font-family='serif' font-weight='900' font-size='18' fill='%23E8002D'%3ES%3C/text%3E%3C/svg%3E"
+const logo =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='18' fill='%23E8002D' opacity='.15' stroke='%23E8002D' stroke-width='1'/%3E%3Ctext x='20' y='26' text-anchor='middle' font-family='serif' font-weight='900' font-size='18' fill='%23E8002D'%3ES%3C/text%3E%3C/svg%3E";
 
 const NAV_LINKS = [
-  { href: '#about',    label: 'About',    sector: '02' },
-  { href: '#work',     label: 'Work',     sector: '03' },
-  { href: '#projects', label: 'Projects', sector: '04' },
-  { href: '#contact',  label: 'Contact',  sector: '05' },
-]
+  { href: "#about", label: "About", sector: "02" },
+  { href: "#work", label: "Work", sector: "03" },
+  { href: "#tech", label: "Tech", sector: "04" },
+  { href: "#projects", label: "Projects", sector: "05" },
+];
 
 /* ── Magnetic link wrapper ─────────────────────────────────────── */
-function MagneticLink({ children, className, href, onClick, onMouseEnter, onMouseLeave, role, ariaCurrent }) {
-  const ref = useRef(null)
+function MagneticLink({
+  children,
+  className,
+  href,
+  onClick,
+  onMouseEnter,
+  onMouseLeave,
+  role,
+  ariaCurrent,
+}) {
+  const ref = useRef(null);
 
   const handleMove = (e) => {
-    const el = ref.current
-    if (!el) return
-    const rect = el.getBoundingClientRect()
-    const x = ((e.clientX - rect.left) / rect.width  - 0.5) * 14
-    const y = ((e.clientY - rect.top)  / rect.height - 0.5) * 8
-    el.style.transform = `translate(${x}px, ${y}px)`
-  }
+    const el = ref.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 14;
+    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 8;
+    el.style.transform = `translate(${x}px, ${y}px)`;
+  };
 
   const handleLeave = (e) => {
-    if (ref.current) ref.current.style.transform = ''
-    onMouseLeave?.(e)
-  }
+    if (ref.current) ref.current.style.transform = "";
+    onMouseLeave?.(e);
+  };
 
   return (
     <a
@@ -39,130 +49,145 @@ function MagneticLink({ children, className, href, onClick, onMouseEnter, onMous
       onMouseLeave={handleLeave}
       role={role}
       aria-current={ariaCurrent}
-      style={{ transition: 'transform 0.5s cubic-bezier(0.23,1,0.32,1)' }}
+      style={{ transition: "transform 0.5s cubic-bezier(0.23,1,0.32,1)" }}
     >
       {children}
     </a>
-  )
+  );
 }
 
 /* ── Glitch text effect ─────────────────────────────────────────── */
 function GlitchText({ children, className, active }) {
   return (
-    <span className={`glitch-wrap ${className || ''} ${active ? 'glitch-active' : ''}`} data-text={children}>
+    <span
+      className={`glitch-wrap ${className || ""} ${active ? "glitch-active" : ""}`}
+      data-text={children}
+    >
       {children}
     </span>
-  )
+  );
 }
 
 export default function Navbar() {
-  const [scrolled,    setScrolled]    = useState(false)
-  const [scrollPct,   setScrollPct]   = useState(0)
-  const [active,      setActive]      = useState('')
-  const [mobileOpen,  setMobileOpen]  = useState(false)
-  const [mounted,     setMounted]     = useState(false)
-  const [hoveredLink, setHoveredLink] = useState(null)
-  const [mousePos,    setMousePos]    = useState({ x: -200, y: -200 })
-  const menuRef  = useRef(null)
-  const canvasRef = useRef(null)
-  const frameRef  = useRef(null)
+  const [scrolled, setScrolled] = useState(false);
+  const [scrollPct, setScrollPct] = useState(0);
+  const [active, setActive] = useState("");
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [hoveredLink, setHoveredLink] = useState(null);
+  const [mousePos, setMousePos] = useState({ x: -200, y: -200 });
+  const menuRef = useRef(null);
+  const canvasRef = useRef(null);
+  const frameRef = useRef(null);
 
   /* staggered mount */
-  useEffect(() => { const t = setTimeout(() => setMounted(true), 60); return () => clearTimeout(t) }, [])
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), 60);
+    return () => clearTimeout(t);
+  }, []);
 
   /* close mobile menu on resize to desktop */
   useEffect(() => {
-    const onResize = () => { if (window.innerWidth >= 769) setMobileOpen(false) }
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
-  }, [])
+    const onResize = () => {
+      if (window.innerWidth >= 769) setMobileOpen(false);
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   /* scroll depth → progress bar + shadow */
   useEffect(() => {
     const onScroll = () => {
-      const sy = window.scrollY
-      const total = document.documentElement.scrollHeight - window.innerHeight
-      setScrollPct(total > 0 ? (sy / total) * 100 : 0)
-      setScrolled(sy > 24)
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+      const sy = window.scrollY;
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      setScrollPct(total > 0 ? (sy / total) * 100 : 0);
+      setScrolled(sy > 24);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   /* active section */
   useEffect(() => {
-    const ids = NAV_LINKS.map(l => l.href.slice(1))
-    const observers = ids.map(id => {
-      const el = document.getElementById(id)
-      if (!el) return null
+    const ids = NAV_LINKS.map((l) => l.href.slice(1));
+    const observers = ids.map((id) => {
+      const el = document.getElementById(id);
+      if (!el) return null;
       const obs = new IntersectionObserver(
-        ([e]) => { if (e.isIntersecting) setActive('#' + id) },
-        { threshold: 0.35 }
-      )
-      obs.observe(el)
-      return obs
-    })
-    return () => observers.forEach(o => o?.disconnect())
-  }, [])
+        ([e]) => {
+          if (e.isIntersecting) setActive("#" + id);
+        },
+        { threshold: 0.35 },
+      );
+      obs.observe(el);
+      return obs;
+    });
+    return () => observers.forEach((o) => o?.disconnect());
+  }, []);
 
   /* close mobile on outside click */
   useEffect(() => {
-    if (!mobileOpen) return
+    if (!mobileOpen) return;
     const handler = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) setMobileOpen(false)
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [mobileOpen])
+      if (menuRef.current && !menuRef.current.contains(e.target))
+        setMobileOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [mobileOpen]);
 
   /* lock body scroll when mobile menu is open */
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? 'hidden' : ''
-    return () => { document.body.style.overflow = '' }
-  }, [mobileOpen])
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
 
   /* track mouse for spotlight effect */
   useEffect(() => {
     const onMove = (e) => {
-      const nav = menuRef.current
-      if (!nav) return
-      const rect = nav.getBoundingClientRect()
-      setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top })
-    }
-    window.addEventListener('mousemove', onMove)
-    return () => window.removeEventListener('mousemove', onMove)
-  }, [])
+      const nav = menuRef.current;
+      if (!nav) return;
+      const rect = nav.getBoundingClientRect();
+      setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+    };
+    window.addEventListener("mousemove", onMove);
+    return () => window.removeEventListener("mousemove", onMove);
+  }, []);
 
   /* animated noise canvas */
   useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    let frame = 0
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    let frame = 0;
     const draw = () => {
-      canvas.width  = canvas.offsetWidth
-      canvas.height = canvas.offsetHeight
-      const img = ctx.createImageData(canvas.width, canvas.height)
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+      const img = ctx.createImageData(canvas.width, canvas.height);
       for (let i = 0; i < img.data.length; i += 4) {
-        const v = Math.random() * 18 | 0
-        img.data[i]   = v
-        img.data[i+1] = v
-        img.data[i+2] = v
-        img.data[i+3] = 28
+        const v = (Math.random() * 18) | 0;
+        img.data[i] = v;
+        img.data[i + 1] = v;
+        img.data[i + 2] = v;
+        img.data[i + 3] = 28;
       }
-      ctx.putImageData(img, 0, 0)
-      frame++
-      if (frame % 3 === 0) frameRef.current = requestAnimationFrame(draw)
-      else frameRef.current = requestAnimationFrame(draw)
-    }
-    frameRef.current = requestAnimationFrame(draw)
-    return () => cancelAnimationFrame(frameRef.current)
-  }, [])
+      ctx.putImageData(img, 0, 0);
+      frame++;
+      if (frame % 3 === 0) frameRef.current = requestAnimationFrame(draw);
+      else frameRef.current = requestAnimationFrame(draw);
+    };
+    frameRef.current = requestAnimationFrame(draw);
+    return () => cancelAnimationFrame(frameRef.current);
+  }, []);
 
   const smoothTo = (href) => {
-    document.getElementById(href.slice(1))?.scrollIntoView({ behavior: 'smooth' })
-    setMobileOpen(false)
-  }
+    document
+      .getElementById(href.slice(1))
+      ?.scrollIntoView({ behavior: "smooth" });
+    setMobileOpen(false);
+  };
 
   return (
     <>
@@ -691,12 +716,12 @@ export default function Navbar() {
       <nav
         className="nav-root"
         ref={menuRef}
-        style={{ opacity: mounted ? 1 : 0, transition: 'opacity 0.4s ease' }}
+        style={{ opacity: mounted ? 1 : 0, transition: "opacity 0.4s ease" }}
         aria-label="Primary navigation"
       >
         <div
-          className={`nav-strip${scrolled ? ' scrolled' : ''}`}
-          style={{ '--mx': `${mousePos.x}px`, '--my': `${mousePos.y}px` }}
+          className={`nav-strip${scrolled ? " scrolled" : ""}`}
+          style={{ "--mx": `${mousePos.x}px`, "--my": `${mousePos.y}px` }}
         >
           {/* animated noise canvas */}
           <canvas ref={canvasRef} className="nav-noise" aria-hidden="true" />
@@ -718,7 +743,10 @@ export default function Navbar() {
           <a
             className="nav-logo-wrap"
             href="/"
-            onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+            onClick={(e) => {
+              e.preventDefault();
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
             aria-label="Back to top"
           >
             <div className="nav-logo-img-wrap">
@@ -737,10 +765,13 @@ export default function Navbar() {
               <MagneticLink
                 key={link.href}
                 href={link.href}
-                className={`nav-link${active === link.href ? ' active-link' : ''}`}
+                className={`nav-link${active === link.href ? " active-link" : ""}`}
                 role="listitem"
-                ariaCurrent={active === link.href ? 'page' : undefined}
-                onClick={(e) => { e.preventDefault(); smoothTo(link.href) }}
+                ariaCurrent={active === link.href ? "page" : undefined}
+                onClick={(e) => {
+                  e.preventDefault();
+                  smoothTo(link.href);
+                }}
                 onMouseEnter={() => setHoveredLink(link.href)}
                 onMouseLeave={() => setHoveredLink(null)}
               >
@@ -748,7 +779,9 @@ export default function Navbar() {
                 <div className="nav-link-ticker" />
                 <div className="nav-link-top" />
                 <span className="nav-link-sector">{link.sector}</span>
-                <GlitchText active={hoveredLink === link.href}>{link.label}</GlitchText>
+                <GlitchText active={hoveredLink === link.href}>
+                  {link.label}
+                </GlitchText>
                 <span className="nav-link-bar" />
               </MagneticLink>
             ))}
@@ -758,9 +791,9 @@ export default function Navbar() {
           <div className="nav-status">
             <div className="nav-status-pill" aria-label="Open to work">
               <div className="nav-status-dot-wrap">
-                <span className="nav-status-ring"  aria-hidden="true" />
+                <span className="nav-status-ring" aria-hidden="true" />
                 <span className="nav-status-ring2" aria-hidden="true" />
-                <span className="nav-status-core"  aria-hidden="true" />
+                <span className="nav-status-core" aria-hidden="true" />
               </div>
               <span className="nav-status-text">Open to work</span>
             </div>
@@ -768,9 +801,9 @@ export default function Navbar() {
 
           {/* ── HAMBURGER (mobile only) ── */}
           <button
-            className={`nav-hamburger${mobileOpen ? ' open' : ''}`}
-            onClick={() => setMobileOpen(v => !v)}
-            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+            className={`nav-hamburger${mobileOpen ? " open" : ""}`}
+            onClick={() => setMobileOpen((v) => !v)}
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
             aria-controls="nav-mobile-menu"
           >
@@ -791,10 +824,13 @@ export default function Navbar() {
             {NAV_LINKS.map((link, i) => (
               <div key={link.href}>
                 <a
-                  className={`nav-mobile-link${active === link.href ? ' active-link' : ''}`}
+                  className={`nav-mobile-link${active === link.href ? " active-link" : ""}`}
                   href={link.href}
                   role="menuitem"
-                  onClick={(e) => { e.preventDefault(); smoothTo(link.href) }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    smoothTo(link.href);
+                  }}
                   style={{ animationDelay: `${0.04 + i * 0.07}s` }}
                 >
                   <span className="nav-mobile-sector">{link.sector}</span>
@@ -806,10 +842,20 @@ export default function Navbar() {
             ))}
 
             <div className="nav-mobile-foot">
-              <div style={{ position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:10,height:10,flexShrink:0 }}>
-                <span className="nav-status-ring"  aria-hidden="true" />
+              <div
+                style={{
+                  position: "relative",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: 10,
+                  height: 10,
+                  flexShrink: 0,
+                }}
+              >
+                <span className="nav-status-ring" aria-hidden="true" />
                 <span className="nav-status-ring2" aria-hidden="true" />
-                <span className="nav-status-core"  aria-hidden="true" />
+                <span className="nav-status-core" aria-hidden="true" />
               </div>
               <span className="nav-mobile-foot-text">Open to work</span>
             </div>
@@ -817,5 +863,5 @@ export default function Navbar() {
         )}
       </nav>
     </>
-  )
+  );
 }

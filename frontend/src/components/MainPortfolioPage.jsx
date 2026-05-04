@@ -695,19 +695,21 @@ export default function MainPortfolioPage({
   const [jumpTransition, setJumpTransition] = useState(null)
   const transitionTimerRef = useRef(null)
   const resumeLink = 'https://drive.google.com/file/d/16L3bG9SRe935JUk7urKlawEmpDGsfmcX/view?usp=sharing'
-  const sectionOrder = ['home', 'about', 'work', 'projects', 'contact']
+  const sectionOrder = ['home', 'about', 'work', 'tech', 'projects']
   const transitionLabels = {
     home: 'PIT RETURN',
     about: 'SECTOR 02',
     work: 'SECTOR 03',
-    projects: 'SECTOR 04',
+    tech: 'SECTOR 04',
+    projects: 'SECTOR 05',
     contact: 'FINAL STOP',
   }
   const transitionSubtitles = {
     home: 'BOX LANE • RESET THE LAP',
     about: 'SECTOR 02 • BUILDING THE RACE',
     work: 'SECTOR 03 • TEAM STRATEGY ACTIVE',
-    projects: 'SECTOR 04 • PUSHING THE PACE',
+    tech: 'SECTOR 04 • TECHNICAL SPECS',
+    projects: 'SECTOR 05 • PUSHING THE PACE',
     contact: 'CHECKERED FLAG • END OF RUN',
   }
 
@@ -738,7 +740,7 @@ export default function MainPortfolioPage({
     }, { index: 0, distance: Number.POSITIVE_INFINITY }).index
 
     if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current)
-    setJumpTransition({ id, direction: targetIndex >= currentIndex ? 'forward' : 'reverse', label: transitionLabels[id] || 'LAP TRANSFER' })
+    setJumpTransition({ id, direction: targetIndex >= currentIndex ? 'forward' : 'reverse', label: transitionLabels[id] || 'SECTOR 04' })
 
     if (reduceMotion) {
       el.scrollIntoView({ behavior: 'auto', block: 'start' })
