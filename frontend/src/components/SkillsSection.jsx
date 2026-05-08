@@ -135,7 +135,7 @@ function TechCard({ tech, index }) {
         </div>
       </div>
 
-      {/* Bottom telemetry line */}
+      {/* Telemetry line at the bottom */}
       <div className="ts-telem" style={{ '--telem-pct': `${pct}%` }} />
     </div>
   )
