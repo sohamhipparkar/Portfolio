@@ -437,7 +437,7 @@ export default function SkillsSection() {
           ))}
         </div>
 
-        {/* Grid */}
+        {/* Grid  Section*/}
         <div className={`sec-d4 ts-grid${transitioning ? ' ts-exiting' : ''}`}>
           {renderedItems.map((tech, i) => (
             <TechCard key={tech.name} tech={tech} index={i} />
