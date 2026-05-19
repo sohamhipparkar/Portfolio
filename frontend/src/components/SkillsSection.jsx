@@ -420,7 +420,7 @@ export default function SkillsSection() {
           subtitle="Every tool chosen deliberately — performance, DX, and longevity over trend."
         />
 
-        {/* Filter row */}
+        {/* Filtering row */}
         <div className="sec-d3 ts-filter-row">
           {categories.map((cat) => (
             <button
