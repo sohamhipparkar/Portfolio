@@ -42,12 +42,12 @@ const categories = [
 const catColor = { frontend: '#38bdf8', backend: '#34d399', database: '#fbbf24', tools: '#a78bfa' }
 const catAbbr  = { frontend: 'FE', backend: 'BE', database: 'DB', tools: 'TL' }
 
-// Random telemetry percentage per tech (stable across renders via memo)
+// Random telemetry percent per technology (stable across renders via memo)
 const telemPcts = Object.fromEntries(
   techStack.map((t) => [t.name, 40 + Math.floor(Math.random() * 55)])
 )
 
-// Animated counter
+// Animated counter that counts up to target when it enters view
 function Counter({ target, duration = 500 }) {
   const [val, setVal] = useState(0)
   const raf = useRef(null)
