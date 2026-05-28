@@ -84,7 +84,7 @@ function GlitchWord({ children }) {
   )
 }
 
-// Individual F1 card — isolated so hover state is per-card only
+// Isolated F1 cards
 function TechCard({ tech, index }) {
   const [hovered, setHovered] = useState(false)
   const color = catColor[tech.cat] || '#E8002D'
