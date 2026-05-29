@@ -970,38 +970,55 @@ export default function IntroSequence({ MainComponent = MainPortfolioPage }) {
         <div className="vignette" />
 
         {/* Corner decorations */}
-        <div className={`corner-deco tl ${isActive ? 'active' : ''}`} />
-        <div className={`corner-deco tr ${isActive ? 'active' : ''}`} />
-        <div className={`corner-deco bl ${isActive ? 'active' : ''}`} />
-        <div className={`corner-deco br ${isActive ? 'active' : ''}`} />
+        <div className={`corner-deco tl ${isActive ? "active" : ""}`} />
+        <div className={`corner-deco tr ${isActive ? "active" : ""}`} />
+        <div className={`corner-deco bl ${isActive ? "active" : ""}`} />
+        <div className={`corner-deco br ${isActive ? "active" : ""}`} />
 
-        <div className={`intro-wordmark ${isActive ? 'active' : ''}`}>Portfolio</div>
+        <div className={`intro-wordmark ${isActive ? "active" : ""}`}>
+          Portfolio
+        </div>
 
-        <div className={`gear-indicator ${isLaunch ? 'launch' : isRev ? 'active' : ''}`}>
-          {isLaunch ? '1' : isRev ? 'N' : 'P'}
+        <div
+          className={`gear-indicator ${isLaunch ? "launch" : isRev ? "active" : ""}`}
+        >
+          {isLaunch ? "1" : isRev ? "N" : "P"}
         </div>
 
         {/* Telemetry sidebar */}
-        <div className={`telemetry-left ${isRev || isLaunch ? 'visible' : ''}`}>
+        <div className={`telemetry-left ${isRev || isLaunch ? "visible" : ""}`}>
           <div className="telem-row">
             <span className="telem-key">SPD</span>
-            <span className="telem-val">{isRev ? `${Math.round(rpmLevel * 3.2)}` : isLaunch ? '340' : '0'} KM/H</span>
+            <span className="telem-val">
+              {isRev ? `${Math.round(rpmLevel * 3.2)}` : isLaunch ? "340" : "0"}{" "}
+              KM/H
+            </span>
           </div>
           <div className="telem-row">
             <span className="telem-key">LAP</span>
-            <span className="telem-val">1:24.{isRev ? Math.round(rpmLevel * 0.35).toString().padStart(3, '0') : '000'}</span>
+            <span className="telem-val">
+              1:24.
+              {isRev
+                ? Math.round(rpmLevel * 0.35)
+                    .toString()
+                    .padStart(3, "0")
+                : "000"}
+            </span>
           </div>
           <div className="telem-row">
             <span className="telem-key">GRIP</span>
-            <span className="telem-val">{isRev ? `${Math.round(60 + rpmLevel * 0.4)}%` : '100%'}</span>
+            <span className="telem-val">
+              {isRev ? `${Math.round(60 + rpmLevel * 0.4)}%` : "100%"}
+            </span>
           </div>
         </div>
 
         {/* Launch flash overlay */}
         {launchFlash && <div className="launch-flash" />}
 
-        <div className={`race-stage ${isActive ? 'active' : ''} ${isLaunch ? 'is-launch' : ''}`}>
-
+        <div
+          className={`race-stage ${isActive ? "active" : ""} ${isLaunch ? "is-launch" : ""}`}
+        >
           {/* Signal Lights */}
           <div className="signal-panel">
             <div className={`signal-bar ${signalState}`}>
@@ -1023,10 +1040,10 @@ export default function IntroSequence({ MainComponent = MainPortfolioPage }) {
                 className="speed-line"
                 style={{
                   top: `${5 + i * 5.2}%`,
-                  '--dur': `${0.2 + (i % 4) * 0.05}s`,
+                  "--dur": `${0.2 + (i % 4) * 0.05}s`,
                   animationDelay: `${(i * 0.065) % 0.3}s`,
                   opacity: 0.25 + (i % 4) * 0.18,
-                  height: i % 3 === 0 ? '2px' : '1px',
+                  height: i % 3 === 0 ? "2px" : "1px",
                 }}
               />
             ))}
@@ -1036,7 +1053,10 @@ export default function IntroSequence({ MainComponent = MainPortfolioPage }) {
           <div className={`f1-car-wrap ${carClass}`}>
             <div className="car-ground-glow" />
             <div className="tire-smoke">
-              <div className="smoke-puff" style={{ width: 30, height: 30, bottom: 0, right: 5 }} />
+              <div
+                className="smoke-puff"
+                style={{ width: 30, height: 30, bottom: 0, right: 5 }}
+              />
               <div className="smoke-puff" />
               <div className="smoke-puff" />
             </div>
@@ -1045,7 +1065,7 @@ export default function IntroSequence({ MainComponent = MainPortfolioPage }) {
 
           {/* Particles */}
           <div className="particle-layer">
-            {particles.map(p => (
+            {particles.map((p) => (
               <div
                 key={p.id}
                 className={`particle ${p.hue}`}
@@ -1060,11 +1080,13 @@ export default function IntroSequence({ MainComponent = MainPortfolioPage }) {
             ))}
           </div>
 
-          {/* RPM Panel */}
-          <div className={`rpm-panel ${isRev ? 'visible' : ''}`}>
+          {/* --------- RPM Panel --------- */}
+          <div className={`rpm-panel ${isRev ? "visible" : ""}`}>
             <div className="rpm-header">
               <div className="rpm-label">Engine RPM</div>
-              <div className="rpm-value">{Math.round(rpmLevel * 180).toLocaleString()}</div>
+              <div className="rpm-value">
+                {Math.round(rpmLevel * 180).toLocaleString()}
+              </div>
             </div>
             <div className="rpm-track">
               <div className="rpm-fill" style={{ width: `${rpmLevel}%` }} />
@@ -1077,10 +1099,15 @@ export default function IntroSequence({ MainComponent = MainPortfolioPage }) {
           </div>
 
           {/* Greeting Progress */}
-          <div className={`greeting-progress ${phase === 'exhaust' ? 'visible' : ''}`}>
+          <div
+            className={`greeting-progress ${phase === "exhaust" ? "visible" : ""}`}
+          >
             <div className="progress-label">Loading</div>
             <div className="progress-track">
-              <div className="progress-fill" style={{ width: `${progress}%` }} />
+              <div
+                className="progress-fill"
+                style={{ width: `${progress}%` }}
+              />
             </div>
           </div>
 
@@ -1089,14 +1116,14 @@ export default function IntroSequence({ MainComponent = MainPortfolioPage }) {
             {exhaustWords.map(({ id, word, style, mode }) => (
               <span
                 key={id}
-                className={`exhaust-word ${mode ?? 'hold'}`}
+                className={`exhaust-word ${mode ?? "hold"}`}
                 style={style}
               >
                 {splitGraphemes(word).map((char, i) => (
                   <span
                     key={`${id}-c${i}`}
                     className="greeting-char"
-                    style={{ '--char-index': i, whiteSpace: 'pre' }}
+                    style={{ "--char-index": i, whiteSpace: "pre" }}
                   >
                     {char}
                   </span>
@@ -1109,5 +1136,5 @@ export default function IntroSequence({ MainComponent = MainPortfolioPage }) {
         <Analytics />
       </div>
     </>
-  )
+  );
 }

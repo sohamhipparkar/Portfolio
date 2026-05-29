@@ -694,6 +694,7 @@ export default function MainPortfolioPage({
   const [pct, setPct] = useState(0)
   const [jumpTransition, setJumpTransition] = useState(null)
   const transitionTimerRef = useRef(null)
+  //Resume link
   const resumeLink = 'https://drive.google.com/file/d/16L3bG9SRe935JUk7urKlawEmpDGsfmcX/view?usp=sharing'
   const sectionOrder = ['home', 'about', 'work', 'tech', 'projects']
   const transitionLabels = {

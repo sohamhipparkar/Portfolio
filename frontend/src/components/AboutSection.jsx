@@ -776,7 +776,7 @@ export default function AboutSection() {
             </span>
           </div>
 
-          {/* Heading */}
+          {/* --------- Heading --------- */}
           <h2
             className="ab-d1"
             style={{

@@ -1045,7 +1045,7 @@ export default function Hero({ onViewWork, onContact, resumeLink = "#" }) {
             Full-Stack Developer · Available for hire
           </div>
 
-          {/* Typewriter role */}
+          {/* --------- Typewriter role --------- */}
           <div
             style={{
               minHeight: 30,

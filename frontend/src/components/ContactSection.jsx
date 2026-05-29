@@ -901,7 +901,7 @@ export default function ContactSection() {
         </div>
 
         <div className="cs-grid">
-          {/* LEFT */}
+          {/* --------- LEFT --------- */}
           <div className="cs-left">
             <h2 className="cs-headline">
               <GlitchText>Ready to build</GlitchText>

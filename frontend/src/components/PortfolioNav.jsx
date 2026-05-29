@@ -502,7 +502,6 @@ export default function PortfolioNav({ scrollY: scrollYProp, onNavigate, logoImg
   const navRef = useRef(null);
   const launchTimerRef = useRef(null);
 
-  // If no external scrollY prop, track internally
   useEffect(() => {
     if (scrollYProp !== undefined) return;
     const onScroll = () => setScrollY(window.scrollY);

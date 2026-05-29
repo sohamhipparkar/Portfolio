@@ -84,7 +84,7 @@ function GlitchWord({ children }) {
   )
 }
 
-// Isolated F1 cards
+// Isolated F1 cards for better visual separation
 function TechCard({ tech, index }) {
   const [hovered, setHovered] = useState(false)
   const color = catColor[tech.cat] || '#E8002D'
