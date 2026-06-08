@@ -986,7 +986,7 @@ export default function Hero({ onViewWork, onContact, resumeLink = "#" }) {
             }}
           />
 
-          {/* Status line */}
+          {/* --------- Status line --------- */}
           <div
             className="hd1"
             style={{

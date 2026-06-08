@@ -716,7 +716,7 @@ export default function AboutSection() {
             }}
           />
 
-          {/* Eyebrow badge */}
+          {/* --------- Eyebrow badge --------- */}
           <div className="ab-d0" style={{ marginBottom: 22 }}>
             <span
               style={{

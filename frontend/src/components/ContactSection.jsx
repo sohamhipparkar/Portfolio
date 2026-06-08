@@ -1020,7 +1020,7 @@ export default function ContactSection() {
 
         <br />
 
-        {/* TELEMETRY BAR */}
+        {/* --------- TELEMETRY BAR --------- */}
         <div className="cs-telemetry">
           {[
             { k: "STATUS", v: "AVAILABLE", live: true },

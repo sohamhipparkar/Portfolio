@@ -144,7 +144,7 @@ export default function ProjectsSection({ projects }) {
     <section
       id="projects"
       ref={sectionRef}
-      className={`port-section${visible ? ' sec-visible' : ''}`}
+      className={`port-section${visible ? " sec-visible" : ""}`}
       aria-label="Selected projects"
     >
       <SectionStyles />
@@ -780,16 +780,20 @@ export default function ProjectsSection({ projects }) {
 
       <SectionBg mousePos={mousePos} ghostNum="05" redGlowPos="top-right" />
 
-      <div style={{ position: 'relative', zIndex: 10, maxWidth: 1080 }}>
+      <div style={{ position: "relative", zIndex: 10, maxWidth: 1080 }}>
         <div className="proj-header-fix">
           <SectionHeader
             sectorLabel="Sector 05 - Fastest Laps"
-            title={[<GlitchWord key="selected">Selected</GlitchWord>, 'Projects', '']}
+            title={[
+              <GlitchWord key="selected">Selected</GlitchWord>,
+              "Projects",
+              "",
+            ]}
             subtitle="Precision-engineered builds — each one a lap record in its own right."
           />
         </div>
 
-        {/* ───────────────────────────────── Featured Project ───────────────────────────────── */}
+        {/* --------- Featured Project --------- */}
         {featured && (
           <div
             className="sec-d3 proj-featured"
@@ -810,19 +814,23 @@ export default function ProjectsSection({ projects }) {
               {featured.stats && (
                 <div className="proj-stats">
                   {featured.stats.map((s) => (
-                    <span key={s} className="proj-stat">{s}</span>
+                    <span key={s} className="proj-stat">
+                      {s}
+                    </span>
                   ))}
                 </div>
               )}
 
               <div className="proj-tags">
                 {featured.tags.map((tag, i) => (
-                  <AnimTag key={tag} delay={i * 50}>{tag}</AnimTag>
+                  <AnimTag key={tag} delay={i * 50}>
+                    {tag}
+                  </AnimTag>
                 ))}
               </div>
             </div>
 
-            {/* Right */}
+            {/* --------- Right --------- */}
             <div className="proj-featured-right">
               <div className="proj-meta-block">
                 {featured.year && (
@@ -845,7 +853,14 @@ export default function ProjectsSection({ projects }) {
                 )}
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'flex-start' }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 12,
+                  alignItems: "flex-start",
+                }}
+              >
                 <div className="proj-badge-row">
                   <span className="proj-featured-badge">▲ Featured</span>
                 </div>
@@ -871,5 +886,5 @@ export default function ProjectsSection({ projects }) {
         </div>
       </div>
     </section>
-  )
+  );
 }

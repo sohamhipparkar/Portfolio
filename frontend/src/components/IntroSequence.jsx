@@ -1063,7 +1063,7 @@ export default function IntroSequence({ MainComponent = MainPortfolioPage }) {
             <img className="car-photo" src={carPhoto} alt="Formula 1 car" />
           </div>
 
-          {/* Particles */}
+          {/* --------- Particles --------- */}
           <div className="particle-layer">
             {particles.map((p) => (
               <div
