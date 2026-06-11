@@ -805,7 +805,7 @@ export default function ProjectsSection({ projects }) {
             <div className="proj-corner" />
             <div className="proj-noise" />
 
-            {/* Left */}
+            {/* --------- Left ---------*/}
             <div className="proj-featured-left">
               <GlitchNum delay={0}>{featured.num}</GlitchNum>
               <h3 className="proj-title">{featured.title}</h3>
@@ -870,14 +870,14 @@ export default function ProjectsSection({ projects }) {
           </div>
         )}
 
-        {/* ── Rest of Projects ─────────────────────────────────── */}
+        {/* --------- Rest of Projects --------- */}
         <div className="sec-d4 proj-grid">
           {rest.map((project, i) => (
             <ProjectCard key={project.num} project={project} index={i} />
           ))}
         </div>
 
-        {/* ── Footer bar ───────────────────────────────────────── */}
+        {/* --------- Footer bar --------- */}
         <div className="sec-d5 proj-footer">
           <span className="proj-count">
             <span>{projects.length}</span> total projects

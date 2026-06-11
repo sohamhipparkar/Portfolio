@@ -525,7 +525,7 @@ export default function PreviousTeamsSection() {
               onMouseLeave={() => setHoveredIdx(null)}
               style={{ transitionDelay: `${i * 0.06}s` }}
             >
-              {/* Timeline node */}
+              {/* --------- Timeline node --------- */}
               <div className="tl-node"><div className="tl-node-inner" /></div>
               <div className="tl-node-pulse" />
               <div className="tl-tick" />

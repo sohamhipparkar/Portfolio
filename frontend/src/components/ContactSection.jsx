@@ -936,7 +936,7 @@ export default function ContactSection() {
             </div>
           </div>
 
-          {/* RIGHT — FORM */}
+          {/* --------- RIGHT — FORM --------- */}
           <div className="cs-form">
             {sent ? (
               <div className="cs-sent">
