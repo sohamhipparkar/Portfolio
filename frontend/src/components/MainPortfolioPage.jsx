@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from "react";
 
 const FontLoader = () => (
   <style>{`
@@ -677,7 +677,7 @@ const FontLoader = () => (
       .ts-legend { display: none; }
     }
   `}</style>
-)
+);
 
 export default function MainPortfolioPage({
   renderNav,
@@ -690,81 +690,105 @@ export default function MainPortfolioPage({
   footerSection,
   sideElements,
 }) {
-  const [scrollY, setScrollY] = useState(0)
-  const [pct, setPct] = useState(0)
-  const [jumpTransition, setJumpTransition] = useState(null)
-  const transitionTimerRef = useRef(null)
-  //Resume link
-  const resumeLink = 'https://drive.google.com/file/d/16L3bG9SRe935JUk7urKlawEmpDGsfmcX/view?usp=sharing'
-  const sectionOrder = ['home', 'about', 'work', 'tech', 'projects']
+  const [scrollY, setScrollY] = useState(0);
+  const [pct, setPct] = useState(0);
+  const [jumpTransition, setJumpTransition] = useState(null);
+  const transitionTimerRef = useRef(null);
+  //Resume drive link
+  const resumeLink =
+    "https://drive.google.com/file/d/16L3bG9SRe935JUk7urKlawEmpDGsfmcX/view?usp=sharing";
+  const sectionOrder = ["home", "about", "work", "tech", "projects"];
   const transitionLabels = {
-    home: 'PIT RETURN',
-    about: 'SECTOR 02',
-    work: 'SECTOR 03',
-    tech: 'SECTOR 04',
-    projects: 'SECTOR 05',
-    contact: 'FINAL STOP',
-  }
+    home: "PIT RETURN",
+    about: "SECTOR 02",
+    work: "SECTOR 03",
+    tech: "SECTOR 04",
+    projects: "SECTOR 05",
+    contact: "FINAL STOP",
+  };
   const transitionSubtitles = {
-    home: 'BOX LANE • RESET THE LAP',
-    about: 'SECTOR 02 • BUILDING THE RACE',
-    work: 'SECTOR 03 • TEAM STRATEGY ACTIVE',
-    tech: 'SECTOR 04 • TECHNICAL SPECS',
-    projects: 'SECTOR 05 • PUSHING THE PACE',
-    contact: 'CHECKERED FLAG • END OF RUN',
-  }
+    home: "BOX LANE • RESET THE LAP",
+    about: "SECTOR 02 • BUILDING THE RACE",
+    work: "SECTOR 03 • TEAM STRATEGY ACTIVE",
+    tech: "SECTOR 04 • TECHNICAL SPECS",
+    projects: "SECTOR 05 • PUSHING THE PACE",
+    contact: "CHECKERED FLAG • END OF RUN",
+  };
 
   useEffect(() => {
     const fn = () => {
-      setScrollY(window.scrollY)
-      setPct((window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100)
-    }
-    window.addEventListener('scroll', fn)
-    return () => window.removeEventListener('scroll', fn)
-  }, [])
+      setScrollY(window.scrollY);
+      setPct(
+        (window.scrollY /
+          (document.documentElement.scrollHeight - window.innerHeight)) *
+          100,
+      );
+    };
+    window.addEventListener("scroll", fn);
+    return () => window.removeEventListener("scroll", fn);
+  }, []);
 
-  useEffect(() => () => {
-    if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current)
-  }, [])
+  useEffect(
+    () => () => {
+      if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
+    },
+    [],
+  );
 
   const go = (id) => {
-    const el = document.getElementById(id)
-    if (!el) return
+    const el = document.getElementById(id);
+    if (!el) return;
 
-    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-    const targetIndex = sectionOrder.indexOf(id)
-    const currentIndex = sectionOrder.reduce((closest, sectionId, index) => {
-      const sectionEl = document.getElementById(sectionId)
-      if (!sectionEl) return closest
-      const top = sectionEl.getBoundingClientRect().top
-      return Math.abs(top) < Math.abs(closest.distance) ? { index, distance: top } : closest
-    }, { index: 0, distance: Number.POSITIVE_INFINITY }).index
+    const reduceMotion = window.matchMedia?.(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const targetIndex = sectionOrder.indexOf(id);
+    const currentIndex = sectionOrder.reduce(
+      (closest, sectionId, index) => {
+        const sectionEl = document.getElementById(sectionId);
+        if (!sectionEl) return closest;
+        const top = sectionEl.getBoundingClientRect().top;
+        return Math.abs(top) < Math.abs(closest.distance)
+          ? { index, distance: top }
+          : closest;
+      },
+      { index: 0, distance: Number.POSITIVE_INFINITY },
+    ).index;
 
-    if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current)
-    setJumpTransition({ id, direction: targetIndex >= currentIndex ? 'forward' : 'reverse', label: transitionLabels[id] || 'SECTOR 04' })
+    if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
+    setJumpTransition({
+      id,
+      direction: targetIndex >= currentIndex ? "forward" : "reverse",
+      label: transitionLabels[id] || "SECTOR 04",
+    });
 
     if (reduceMotion) {
-      el.scrollIntoView({ behavior: 'auto', block: 'start' })
-      transitionTimerRef.current = setTimeout(() => setJumpTransition(null), 180)
-      return
+      el.scrollIntoView({ behavior: "auto", block: "start" });
+      transitionTimerRef.current = setTimeout(
+        () => setJumpTransition(null),
+        180,
+      );
+      return;
     }
 
     requestAnimationFrame(() => {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    })
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
 
-    transitionTimerRef.current = setTimeout(() => setJumpTransition(null), 920)
-  }
+    transitionTimerRef.current = setTimeout(() => setJumpTransition(null), 920);
+  };
 
   return (
     <>
       <FontLoader />
-      <div className="grain carbon-bg" style={{ minHeight: '100vh' }}>
-
+      <div className="grain carbon-bg" style={{ minHeight: "100vh" }}>
         <div className="progress-bar" style={{ width: `${pct}%` }} />
 
         {jumpTransition && (
-          <div className={`launch-overlay ${jumpTransition.direction}`} aria-hidden="true">
+          <div
+            className={`launch-overlay ${jumpTransition.direction}`}
+            aria-hidden="true"
+          >
             <div className="launch-overlay__rails" />
             <div className="launch-overlay__pulse" />
             <div className="launch-overlay__track" />
@@ -778,9 +802,13 @@ export default function MainPortfolioPage({
               </div>
               <div className="launch-overlay__badge">PIT LANE TRANSFER</div>
               <div className="launch-overlay__title">
-                {jumpTransition.label} <span>{jumpTransition.id.toUpperCase()}</span>
+                {jumpTransition.label}{" "}
+                <span>{jumpTransition.id.toUpperCase()}</span>
               </div>
-              <div className="launch-overlay__sub">{transitionSubtitles[jumpTransition.id] || 'DRS OPEN • TELEMETRY LOCKED • SCROLLING'}</div>
+              <div className="launch-overlay__sub">
+                {transitionSubtitles[jumpTransition.id] ||
+                  "DRS OPEN • TELEMETRY LOCKED • SCROLLING"}
+              </div>
             </div>
           </div>
         )}
@@ -790,8 +818,8 @@ export default function MainPortfolioPage({
 
         {/* HERO */}
         {renderHero?.({
-          onViewWork: () => go('projects'),
-          onContact: () => go('contact'),
+          onViewWork: () => go("projects"),
+          onContact: () => go("contact"),
           resumeLink,
         })}
 
@@ -826,8 +854,7 @@ export default function MainPortfolioPage({
 
         {/* Side elements */}
         {sideElements}
-
       </div>
     </>
-  )
+  );
 }

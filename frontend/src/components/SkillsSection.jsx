@@ -1,99 +1,221 @@
-import { useState, useRef, useEffect } from 'react'
-import { SectionStyles, SectionBg, SectionHeader, useMouseParallax, useReveal } from './SectionShared'
+import { useState, useRef, useEffect } from "react";
+import {
+  SectionStyles,
+  SectionBg,
+  SectionHeader,
+  useMouseParallax,
+  useReveal,
+} from "./SectionShared";
 
 const techStack = [
-  { name: 'HTML5',         cat: 'frontend', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg' },
-  { name: 'CSS3',          cat: 'frontend', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg' },
-  { name: 'JavaScript',    cat: 'frontend', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg' },
-  { name: 'TypeScript',    cat: 'frontend', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg' },
-  { name: 'React',         cat: 'frontend', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg' },
-  { name: 'Next.js',       cat: 'frontend', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg' },
-  { name: 'Tailwind',      cat: 'frontend', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg' },
-  { name: 'Framer Motion', cat: 'frontend', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/framermotion/framermotion-original.svg' },
-  { name: 'Vite',          cat: 'frontend', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vitejs/vitejs-original.svg' },
-  { name: 'Node.js',       cat: 'backend',  icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg' },
-  { name: 'Express',       cat: 'backend',  icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg' },
-  { name: 'Python',        cat: 'backend',  icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg' },
-  { name: 'Java',          cat: 'backend',  icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg' },
-  { name: 'C++',           cat: 'backend',  icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg' },
-  { name: 'C',             cat: 'backend',  icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/c/c-original.svg' },
-  { name: 'MongoDB',       cat: 'database', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg' },
-  { name: 'PostgreSQL',    cat: 'database', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg' },
-  { name: 'MySQL',         cat: 'database', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg' },
-  { name: 'Git',           cat: 'tools',    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg' },
-  { name: 'Figma',         cat: 'tools',    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg' },
-  { name: 'VSCode',        cat: 'tools',    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg' },
-  { name: 'Postman',       cat: 'tools',    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postman/postman-original.svg' },
-  { name: 'Canva',         cat: 'tools',    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/canva/canva-original.svg' },
-  { name: 'NPM',           cat: 'tools',    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/npm/npm-original-wordmark.svg' },
-  { name: 'AWS',           cat: 'tools',    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg' },
-  { name: 'Azure',         cat: 'tools',    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/azure/azure-original.svg' },
-  { name: 'Google Colab',  cat: 'tools',    icon: 'https://cdn.simpleicons.org/googlecolab/f9ab00' },
-]
+  {
+    name: "HTML5",
+    cat: "frontend",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg",
+  },
+  {
+    name: "CSS3",
+    cat: "frontend",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg",
+  },
+  {
+    name: "JavaScript",
+    cat: "frontend",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg",
+  },
+  {
+    name: "TypeScript",
+    cat: "frontend",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg",
+  },
+  {
+    name: "React",
+    cat: "frontend",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
+  },
+  {
+    name: "Next.js",
+    cat: "frontend",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg",
+  },
+  {
+    name: "Tailwind",
+    cat: "frontend",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg",
+  },
+  {
+    name: "Framer Motion",
+    cat: "frontend",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/framermotion/framermotion-original.svg",
+  },
+  {
+    name: "Vite",
+    cat: "frontend",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vitejs/vitejs-original.svg",
+  },
+  {
+    name: "Node.js",
+    cat: "backend",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg",
+  },
+  {
+    name: "Express",
+    cat: "backend",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg",
+  },
+  {
+    name: "Python",
+    cat: "backend",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg",
+  },
+  {
+    name: "Java",
+    cat: "backend",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg",
+  },
+  {
+    name: "C++",
+    cat: "backend",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg",
+  },
+  {
+    name: "C",
+    cat: "backend",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/c/c-original.svg",
+  },
+  {
+    name: "MongoDB",
+    cat: "database",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg",
+  },
+  {
+    name: "PostgreSQL",
+    cat: "database",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg",
+  },
+  {
+    name: "MySQL",
+    cat: "database",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg",
+  },
+  {
+    name: "Git",
+    cat: "tools",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg",
+  },
+  {
+    name: "Figma",
+    cat: "tools",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg",
+  },
+  {
+    name: "VSCode",
+    cat: "tools",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg",
+  },
+  {
+    name: "Postman",
+    cat: "tools",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postman/postman-original.svg",
+  },
+  {
+    name: "Canva",
+    cat: "tools",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/canva/canva-original.svg",
+  },
+  {
+    name: "NPM",
+    cat: "tools",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/npm/npm-original-wordmark.svg",
+  },
+  {
+    name: "AWS",
+    cat: "tools",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg",
+  },
+  {
+    name: "Azure",
+    cat: "tools",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/azure/azure-original.svg",
+  },
+  {
+    name: "Google Colab",
+    cat: "tools",
+    icon: "https://cdn.simpleicons.org/googlecolab/f9ab00",
+  },
+];
 
 const categories = [
-  { id: 'all',      label: 'All Systems', color: '#E8002D' },
-  { id: 'frontend', label: 'Frontend',    color: '#38bdf8' },
-  { id: 'backend',  label: 'Backend',     color: '#34d399' },
-  { id: 'database', label: 'Database',    color: '#fbbf24' },
-  { id: 'tools',    label: 'Tools',       color: '#a78bfa' },
-]
+  { id: "all", label: "All Systems", color: "#E8002D" },
+  { id: "frontend", label: "Frontend", color: "#38bdf8" },
+  { id: "backend", label: "Backend", color: "#34d399" },
+  { id: "database", label: "Database", color: "#fbbf24" },
+  { id: "tools", label: "Tools", color: "#a78bfa" },
+];
 
-const catColor = { frontend: '#38bdf8', backend: '#34d399', database: '#fbbf24', tools: '#a78bfa' }
-const catAbbr  = { frontend: 'FE', backend: 'BE', database: 'DB', tools: 'TL' }
+const catColor = {
+  frontend: "#38bdf8",
+  backend: "#34d399",
+  database: "#fbbf24",
+  tools: "#a78bfa",
+};
+const catAbbr = { frontend: "FE", backend: "BE", database: "DB", tools: "TL" };
 
 // Random telemetry percent per technology (stable across renders via memo)
 const telemPcts = Object.fromEntries(
-  techStack.map((t) => [t.name, 40 + Math.floor(Math.random() * 55)])
-)
+  techStack.map((t) => [t.name, 40 + Math.floor(Math.random() * 55)]),
+);
 
 // Animated counter that counts up to target when it enters view
 function Counter({ target, duration = 500 }) {
-  const [val, setVal] = useState(0)
-  const raf = useRef(null)
+  const [val, setVal] = useState(0);
+  const raf = useRef(null);
   useEffect(() => {
-    const start = performance.now()
+    const start = performance.now();
     const tick = (now) => {
-      const p = Math.min((now - start) / duration, 1)
-      setVal(Math.round(p * target))
-      if (p < 1) raf.current = requestAnimationFrame(tick)
-    }
-    raf.current = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf.current)
-  }, [target, duration])
-  return <span>{val}</span>
+      const p = Math.min((now - start) / duration, 1);
+      setVal(Math.round(p * target));
+      if (p < 1) raf.current = requestAnimationFrame(tick);
+    };
+    raf.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf.current);
+  }, [target, duration]);
+  return <span>{val}</span>;
 }
 
 function GlitchWord({ children }) {
-  const [glitching, setGlitching] = useState(false)
+  const [glitching, setGlitching] = useState(false);
   useEffect(() => {
-    const id = setInterval(() => {
-      setGlitching(true)
-      setTimeout(() => setGlitching(false), 180)
-    }, 4000 + Math.random() * 3000)
-    return () => clearInterval(id)
-  }, [])
+    const id = setInterval(
+      () => {
+        setGlitching(true);
+        setTimeout(() => setGlitching(false), 180);
+      },
+      4000 + Math.random() * 3000,
+    );
+    return () => clearInterval(id);
+  }, []);
   return (
     <span
-      className={glitching ? 'ts-glitch-active' : ''}
-      style={{ position: 'relative', display: 'inline-block' }}
-      data-text={typeof children === 'string' ? children : ''}
+      className={glitching ? "ts-glitch-active" : ""}
+      style={{ position: "relative", display: "inline-block" }}
+      data-text={typeof children === "string" ? children : ""}
     >
       {children}
     </span>
-  )
+  );
 }
 
 // Isolated F1 cards for better visual separation
 function TechCard({ tech, index }) {
-  const [hovered, setHovered] = useState(false)
-  const color = catColor[tech.cat] || '#E8002D'
-  const pct   = telemPcts[tech.name]
+  const [hovered, setHovered] = useState(false);
+  const color = catColor[tech.cat] || "#E8002D";
+  const pct = telemPcts[tech.name];
 
   return (
     <div
       className="ts-card"
-      style={{ '--ts-card-color': color, animationDelay: `${index * 25}ms` }}
+      style={{ "--ts-card-color": color, animationDelay: `${index * 25}ms` }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -101,26 +223,26 @@ function TechCard({ tech, index }) {
       <div className="ts-carbon" />
 
       {/* Top speed stripe — sweeps left→right on hover */}
-      <div className={`ts-stripe${hovered ? ' active' : ''}`} />
+      <div className={`ts-stripe${hovered ? " active" : ""}`} />
 
       {/* Corner pit-stop brackets */}
-      <div className={`ts-corner ts-tl${hovered ? ' active' : ''}`} />
-      <div className={`ts-corner ts-br${hovered ? ' active' : ''}`} />
+      <div className={`ts-corner ts-tl${hovered ? " active" : ""}`} />
+      <div className={`ts-corner ts-br${hovered ? " active" : ""}`} />
 
       {/* DRS glare sweep */}
-      <div className={`ts-drs${hovered ? ' active' : ''}`} />
+      <div className={`ts-drs${hovered ? " active" : ""}`} />
 
       {/* Category code — top-left (FE / BE / DB / TL) */}
       <span className="ts-lap">{catAbbr[tech.cat]}</span>
 
       {/* Tire-compound dot — top-right */}
-      <div className={`ts-compound${hovered ? ' active' : ''}`} />
+      <div className={`ts-compound${hovered ? " active" : ""}`} />
 
       {/* Icon area */}
       <div className="ts-icon-wrap">
-        <div className={`ts-ring${hovered ? ' active' : ''}`} />
+        <div className={`ts-ring${hovered ? " active" : ""}`} />
         <img
-          className={`ts-icon${hovered ? ' active' : ''}`}
+          className={`ts-icon${hovered ? " active" : ""}`}
           src={tech.icon}
           alt={tech.name}
           loading="lazy"
@@ -129,56 +251,74 @@ function TechCard({ tech, index }) {
 
       {/* Name + rev bar */}
       <div className="ts-name-bar">
-        <span className={`ts-name${hovered ? ' active' : ''}`}>{tech.name}</span>
+        <span className={`ts-name${hovered ? " active" : ""}`}>
+          {tech.name}
+        </span>
         <div className="ts-rev">
-          <div className={`ts-rev-fill${hovered ? ' active' : ''}`} />
+          <div className={`ts-rev-fill${hovered ? " active" : ""}`} />
         </div>
       </div>
 
       {/* Telemetry line at the bottom */}
-      <div className="ts-telem" style={{ '--telem-pct': `${pct}%` }} />
+      <div className="ts-telem" style={{ "--telem-pct": `${pct}%` }} />
     </div>
-  )
+  );
 }
 
 export default function SkillsSection() {
-  const [sectionRef, visible] = useReveal()
-  const mousePos = useMouseParallax()
-  const [active, setActive]           = useState('all')
-  const [transitioning, setTransitioning] = useState(false)
-  const [renderedItems, setRenderedItems] = useState(techStack)
-  const [ripples, setRipples]         = useState([])
-  const timeoutRef = useRef(null)
+  const [sectionRef, visible] = useReveal();
+  const mousePos = useMouseParallax();
+  const [active, setActive] = useState("all");
+  const [transitioning, setTransitioning] = useState(false);
+  const [renderedItems, setRenderedItems] = useState(techStack);
+  const [ripples, setRipples] = useState([]);
+  const timeoutRef = useRef(null);
 
   const handleFilter = (id, e) => {
-    if (id === active || transitioning) return
+    if (id === active || transitioning) return;
 
     // Ripple on button click
     if (e) {
-      const rect = e.currentTarget.getBoundingClientRect()
-      const rippleId = Date.now()
-      setRipples((r) => [...r, { id: rippleId, x: e.clientX - rect.left, y: e.clientY - rect.top, btnId: id }])
-      setTimeout(() => setRipples((r) => r.filter((rp) => rp.id !== rippleId)), 600)
+      const rect = e.currentTarget.getBoundingClientRect();
+      const rippleId = Date.now();
+      setRipples((r) => [
+        ...r,
+        {
+          id: rippleId,
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top,
+          btnId: id,
+        },
+      ]);
+      setTimeout(
+        () => setRipples((r) => r.filter((rp) => rp.id !== rippleId)),
+        600,
+      );
     }
 
-    setTransitioning(true)
-    clearTimeout(timeoutRef.current)
+    setTransitioning(true);
+    clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
-      setActive(id)
-      setRenderedItems(id === 'all' ? techStack : techStack.filter((t) => t.cat === id))
-      setTransitioning(false)
-    }, 260)
-  }
+      setActive(id);
+      setRenderedItems(
+        id === "all" ? techStack : techStack.filter((t) => t.cat === id),
+      );
+      setTransitioning(false);
+    }, 260);
+  };
 
-  useEffect(() => { setRenderedItems(techStack) }, [])
+  useEffect(() => {
+    setRenderedItems(techStack);
+  }, []);
 
-  const activeColor = categories.find((c) => c.id === active)?.color || '#E8002D'
+  const activeColor =
+    categories.find((c) => c.id === active)?.color || "#E8002D";
 
   return (
     <section
       id="tech"
       ref={sectionRef}
-      className={`port-section${visible ? ' sec-visible' : ''}`}
+      className={`port-section${visible ? " sec-visible" : ""}`}
       aria-label="Tech stack"
     >
       <SectionStyles />
@@ -374,7 +514,7 @@ export default function SkillsSection() {
         @keyframes tsTelemPulse { 0%,100%{opacity:.3} 50%{opacity:.65} }
 
         /* ── Stagger per card ── */
-        ${Array.from({ length: 30 }, (_, i) => `.ts-card:nth-child(${i + 1}) { animation-delay:${i * 25}ms; }`).join('\n')}
+        ${Array.from({ length: 30 }, (_, i) => `.ts-card:nth-child(${i + 1}) { animation-delay:${i * 25}ms; }`).join("\n")}
 
         /* ── Bottom bar ── */
         .ts-bottom {
@@ -413,10 +553,14 @@ export default function SkillsSection() {
       <SectionBg mousePos={mousePos} ghostNum="04" redGlowPos="bottom-left" />
       <div className="ts-scan-line" />
 
-      <div style={{ position: 'relative', zIndex: 10, maxWidth: 1080 }}>
+      <div style={{ position: "relative", zIndex: 10, maxWidth: 1080 }}>
         <SectionHeader
           sectorLabel="Sector 04 - Technical Specs"
-          title={[<GlitchWord key="technologies">Technologies</GlitchWord>, 'I Work', 'With']}
+          title={[
+            <GlitchWord key="technologies">Technologies</GlitchWord>,
+            "I Work",
+            "With",
+          ]}
           subtitle="Every tool chosen deliberately — performance, DX, and longevity over trend."
         />
 
@@ -425,20 +569,26 @@ export default function SkillsSection() {
           {categories.map((cat) => (
             <button
               key={cat.id}
-              className={`ts-filter-btn${active === cat.id ? ' active' : ''}`}
-              style={{ '--ts-btn-color': cat.color }}
+              className={`ts-filter-btn${active === cat.id ? " active" : ""}`}
+              style={{ "--ts-btn-color": cat.color }}
               onClick={(e) => handleFilter(cat.id, e)}
             >
-              {ripples.filter((r) => r.btnId === cat.id).map((r) => (
-                <span key={r.id} className="ts-btn-ripple" style={{ left: r.x, top: r.y }} />
-              ))}
+              {ripples
+                .filter((r) => r.btnId === cat.id)
+                .map((r) => (
+                  <span
+                    key={r.id}
+                    className="ts-btn-ripple"
+                    style={{ left: r.x, top: r.y }}
+                  />
+                ))}
               {cat.label}
             </button>
           ))}
         </div>
 
         {/* Grid  Section*/}
-        <div className={`sec-d4 ts-grid${transitioning ? ' ts-exiting' : ''}`}>
+        <div className={`sec-d4 ts-grid${transitioning ? " ts-exiting" : ""}`}>
           {renderedItems.map((tech, i) => (
             <TechCard key={tech.name} tech={tech} index={i} />
           ))}
@@ -456,9 +606,12 @@ export default function SkillsSection() {
           />
           <span className="ts-count">
             <span style={{ color: activeColor }}>
-              <Counter key={renderedItems.length} target={renderedItems.length} />
-            </span>
-            {' '}/{' '}{techStack.length}{' '}technologies
+              <Counter
+                key={renderedItems.length}
+                target={renderedItems.length}
+              />
+            </span>{" "}
+            / {techStack.length} technologies
           </span>
           <div className="ts-legend">
             {categories.slice(1).map((cat) => (
@@ -472,8 +625,9 @@ export default function SkillsSection() {
                   className="ts-legend-dot"
                   style={{
                     background: cat.color,
-                    boxShadow: active === cat.id ? `0 0 8px ${cat.color}` : 'none',
-                    transform: active === cat.id ? 'scale(1.6)' : undefined,
+                    boxShadow:
+                      active === cat.id ? `0 0 8px ${cat.color}` : "none",
+                    transform: active === cat.id ? "scale(1.6)" : undefined,
                   }}
                 />
                 {cat.label}
@@ -483,5 +637,5 @@ export default function SkillsSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }

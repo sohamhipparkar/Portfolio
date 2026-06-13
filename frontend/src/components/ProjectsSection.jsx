@@ -1,113 +1,151 @@
-import { ArrowUpRight } from 'lucide-react'
-import { SectionStyles, SectionBg, SectionHeader, useMouseParallax, useReveal } from './SectionShared'
-import { useRef, useEffect, useState, useCallback } from 'react'
+import { ArrowUpRight } from "lucide-react";
+import {
+  SectionStyles,
+  SectionBg,
+  SectionHeader,
+  useMouseParallax,
+  useReveal,
+} from "./SectionShared";
+import { useRef, useEffect, useState, useCallback } from "react";
 
 const Github = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15">
     <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
   </svg>
-)
+);
 
 function ProjectLinks({ github, live, style }) {
-  if (!github && !live) return null
+  if (!github && !live) return null;
   return (
     <div className="proj-links" style={style}>
       {github && (
-        <a href={github} target="_blank" rel="noreferrer" className="proj-link proj-link-gh" aria-label="GitHub repository">
+        <a
+          href={github}
+          target="_blank"
+          rel="noreferrer"
+          className="proj-link proj-link-gh"
+          aria-label="GitHub repository"
+        >
           <Github size={12} /> <span>Repo</span>
         </a>
       )}
       {live && (
-        <a href={live} target="_blank" rel="noreferrer" className="proj-link proj-link-live" aria-label="Live demo">
+        <a
+          href={live}
+          target="_blank"
+          rel="noreferrer"
+          className="proj-link proj-link-live"
+          aria-label="Live demo"
+        >
           <span>Live</span> <ArrowUpRight size={12} />
         </a>
       )}
     </div>
-  )
+  );
 }
 
 /* ── Magnetic tilt card hook ────────────────────────────────── */
 function useTilt(strength = 12) {
-  const ref = useRef(null)
-  const frameRef = useRef(null)
-  const handleMove = useCallback((e) => {
-    if (!ref.current) return
-    cancelAnimationFrame(frameRef.current)
-    frameRef.current = requestAnimationFrame(() => {
-      const rect = ref.current.getBoundingClientRect()
-      const cx = rect.left + rect.width / 2
-      const cy = rect.top + rect.height / 2
-      const dx = (e.clientX - cx) / (rect.width / 2)
-      const dy = (e.clientY - cy) / (rect.height / 2)
-      ref.current.style.transform = `perspective(900px) rotateY(${dx * strength}deg) rotateX(${-dy * strength * 0.6}deg) translateY(-4px)`
-    })
-  }, [strength])
+  const ref = useRef(null);
+  const frameRef = useRef(null);
+  const handleMove = useCallback(
+    (e) => {
+      if (!ref.current) return;
+      cancelAnimationFrame(frameRef.current);
+      frameRef.current = requestAnimationFrame(() => {
+        const rect = ref.current.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const dx = (e.clientX - cx) / (rect.width / 2);
+        const dy = (e.clientY - cy) / (rect.height / 2);
+        ref.current.style.transform = `perspective(900px) rotateY(${dx * strength}deg) rotateX(${-dy * strength * 0.6}deg) translateY(-4px)`;
+      });
+    },
+    [strength],
+  );
   const handleLeave = useCallback(() => {
-    if (!ref.current) return
-    ref.current.style.transform = 'perspective(900px) rotateY(0deg) rotateX(0deg) translateY(0px)'
-  }, [])
-  return { ref, handleMove, handleLeave }
+    if (!ref.current) return;
+    ref.current.style.transform =
+      "perspective(900px) rotateY(0deg) rotateX(0deg) translateY(0px)";
+  }, []);
+  return { ref, handleMove, handleLeave };
 }
 
 /* ── Glitch number component ────────────────────────────────── */
 function GlitchNum({ children, delay = 0 }) {
   return (
     <div className="proj-num-wrap" aria-hidden="true">
-      <span className="proj-num" style={{ animationDelay: `${delay}ms` }} data-text={children}>{children}</span>
+      <span
+        className="proj-num"
+        style={{ animationDelay: `${delay}ms` }}
+        data-text={children}
+      >
+        {children}
+      </span>
     </div>
-  )
+  );
 }
 
 /* ── Animated tag ────────────────────────────────────────────── */
 function AnimTag({ children, delay = 0 }) {
   return (
-    <span className="proj-tag" style={{ animationDelay: `${delay}ms` }}>{children}</span>
-  )
+    <span className="proj-tag" style={{ animationDelay: `${delay}ms` }}>
+      {children}
+    </span>
+  );
 }
 
 function GlitchWord({ children }) {
-  const [glitching, setGlitching] = useState(false)
+  const [glitching, setGlitching] = useState(false);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setGlitching(true)
-      setTimeout(() => setGlitching(false), 180)
-    }, 4000 + Math.random() * 3000)
+    const interval = setInterval(
+      () => {
+        setGlitching(true);
+        setTimeout(() => setGlitching(false), 180);
+      },
+      4000 + Math.random() * 3000,
+    );
 
-    return () => clearInterval(interval)
-  }, [])
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <span
-      className={glitching ? 'proj-glitch-active' : ''}
-      style={{ position: 'relative', display: 'inline-block' }}
-      data-text={typeof children === 'string' ? children : ''}
+      className={glitching ? "proj-glitch-active" : ""}
+      style={{ position: "relative", display: "inline-block" }}
+      data-text={typeof children === "string" ? children : ""}
     >
       {children}
     </span>
-  )
+  );
 }
 
 /* ── Regular card ────────────────────────────────────────────── */
 function ProjectCard({ project, index }) {
-  const { ref, handleMove, handleLeave } = useTilt(8)
-  const [cardVisible, setCardVisible] = useState(false)
-  const cardRef = useRef(null)
+  const { ref, handleMove, handleLeave } = useTilt(8);
+  const [cardVisible, setCardVisible] = useState(false);
+  const cardRef = useRef(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setCardVisible(true) },
-      { threshold: 0.15 }
-    )
-    if (cardRef.current) observer.observe(cardRef.current)
-    return () => observer.disconnect()
-  }, [])
+      ([entry]) => {
+        if (entry.isIntersecting) setCardVisible(true);
+      },
+      { threshold: 0.15 },
+    );
+    if (cardRef.current) observer.observe(cardRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div
-      ref={(el) => { ref.current = el; cardRef.current = el }}
-      className={`proj-card${cardVisible ? ' proj-card--visible' : ''}`}
-      style={{ '--card-delay': `${index * 80}ms` }}
+      ref={(el) => {
+        ref.current = el;
+        cardRef.current = el;
+      }}
+      className={`proj-card${cardVisible ? " proj-card--visible" : ""}`}
+      style={{ "--card-delay": `${index * 80}ms` }}
       onMouseMove={handleMove}
       onMouseLeave={handleLeave}
     >
@@ -123,22 +161,32 @@ function ProjectCard({ project, index }) {
 
       <div className="proj-tags">
         {project.tags.map((tag, i) => (
-          <AnimTag key={tag} delay={i * 40}>{tag}</AnimTag>
+          <AnimTag key={tag} delay={i * 40}>
+            {tag}
+          </AnimTag>
         ))}
       </div>
 
-      <ProjectLinks github={project.github} live={project.live} style={{ marginTop: 'auto' }} />
+      <ProjectLinks
+        github={project.github}
+        live={project.live}
+        style={{ marginTop: "auto" }}
+      />
     </div>
-  )
+  );
 }
 
 export default function ProjectsSection({ projects }) {
-  const [sectionRef, visible] = useReveal()
-  const mousePos = useMouseParallax()
-  const { ref: featRef, handleMove: featMove, handleLeave: featLeave } = useTilt(4)
+  const [sectionRef, visible] = useReveal();
+  const mousePos = useMouseParallax();
+  const {
+    ref: featRef,
+    handleMove: featMove,
+    handleLeave: featLeave,
+  } = useTilt(4);
 
-  const featured = projects.find((p) => p.featured)
-  const rest = projects.filter((p) => !p.featured)
+  const featured = projects.find((p) => p.featured);
+  const rest = projects.filter((p) => !p.featured);
 
   return (
     <section

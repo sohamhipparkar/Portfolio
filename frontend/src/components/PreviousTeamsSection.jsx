@@ -1,108 +1,141 @@
-import { SectionStyles, SectionBg, SectionHeader, useMouseParallax, useReveal } from './SectionShared'
-import { useEffect, useRef, useState } from 'react'
+import {
+  SectionStyles,
+  SectionBg,
+  SectionHeader,
+  useMouseParallax,
+  useReveal,
+} from "./SectionShared";
+import { useEffect, useRef, useState } from "react";
 
 const jobs = [
   {
-    company: 'Careasa Healthcare Pvt. Ltd.',
-    role: 'Web Development Team Lead',
-    period: 'December 2024 - October 2025',
-    link: 'https://careasa.com',
-    desc: 'Led a cross-functional software team to design, develop, and deploy a responsive web application, managing the full software development lifecycle from planning to deployment.',
-    highlights: ['+90% feature stability', '+80% performance', '5 engineers mentored'],
-    tech: ['React', 'Node.js', 'PostgreSQL', 'Tailwind', 'Sequelize'],
+    company: "Careasa Healthcare Pvt. Ltd.",
+    role: "Web Development Team Lead",
+    period: "December 2024 - October 2025",
+    link: "https://careasa.com",
+    desc: "Led a cross-functional software team to design, develop, and deploy a responsive web application, managing the full software development lifecycle from planning to deployment.",
+    highlights: [
+      "+90% feature stability",
+      "+80% performance",
+      "5 engineers mentored",
+    ],
+    tech: ["React", "Node.js", "PostgreSQL", "Tailwind", "Sequelize"],
   },
   {
-    company: 'Microsoft Learn Student Club (MLSC)',
-    role: 'Technical Team Lead',
-    period: 'April 2025 - February 2026',
-    link: 'https://linkedin.com/company/mlscmitadtu/posts/?feedView=all',
-    desc: 'Guided a team of student developers in collaborative technical projects, fostering a shared learning environment focused on practical skill-building.',
-    highlights: ['10 aspiring developers', 'lectures conducted', 'shared learning'],
-    tech: ['Node.js', 'Express', 'PostgreSQL', 'React', 'Docker'],
+    company: "Microsoft Learn Student Club (MLSC)",
+    role: "Technical Team Lead",
+    period: "April 2025 - February 2026",
+    link: "https://linkedin.com/company/mlscmitadtu/posts/?feedView=all",
+    desc: "Guided a team of student developers in collaborative technical projects, fostering a shared learning environment focused on practical skill-building.",
+    highlights: [
+      "10 aspiring developers",
+      "lectures conducted",
+      "shared learning",
+    ],
+    tech: ["Node.js", "Express", "PostgreSQL", "React", "Docker"],
   },
   {
-    company: 'Association of Computer Engineering Students (ACES)',
-    role: 'Technical Team Member',
-    period: 'July 2024 - March 2025',
-    link: 'https://acesmitadt.com/',
-    desc: 'Built custom and as required solutions for the organization website from scratch, contributing to both frontend and backend development while collaborating with a small team.',
-    highlights: ['end-to-end development', 'scalable solutions', 'spread knowledge'],
-    tech: ['React', 'Node.js', 'MongoDB', 'OAuth'],
+    company: "Association of Computer Engineering Students (ACES)",
+    role: "Technical Team Member",
+    period: "July 2024 - March 2025",
+    link: "https://acesmitadt.com/",
+    desc: "Built custom and as required solutions for the organization website from scratch, contributing to both frontend and backend development while collaborating with a small team.",
+    highlights: [
+      "end-to-end development",
+      "scalable solutions",
+      "spread knowledge",
+    ],
+    tech: ["React", "Node.js", "MongoDB", "OAuth"],
   },
-]
+];
 
 function useIntersectionReveal(threshold = 0.15) {
-  const ref = useRef(null)
-  const [visible, setVisible] = useState(false)
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
   useEffect(() => {
-    const el = ref.current
-    if (!el) return
+    const el = ref.current;
+    if (!el) return;
     const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect() } },
-      { threshold }
-    )
-    obs.observe(el)
-    return () => obs.disconnect()
-  }, [threshold])
-  return [ref, visible]
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          obs.disconnect();
+        }
+      },
+      { threshold },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return [ref, visible];
 }
 
 function GlitchWord({ children }) {
-  const [glitching, setGlitching] = useState(false)
+  const [glitching, setGlitching] = useState(false);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setGlitching(true)
-      setTimeout(() => setGlitching(false), 180)
-    }, 4000 + Math.random() * 3000)
+    const interval = setInterval(
+      () => {
+        setGlitching(true);
+        setTimeout(() => setGlitching(false), 180);
+      },
+      4000 + Math.random() * 3000,
+    );
 
-    return () => clearInterval(interval)
-  }, [])
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <span
-      className={glitching ? 'tl-glitch-active' : ''}
-      style={{ position: 'relative', display: 'inline-block' }}
-      data-text={typeof children === 'string' ? children : ''}
+      className={glitching ? "tl-glitch-active" : ""}
+      style={{ position: "relative", display: "inline-block" }}
+      data-text={typeof children === "string" ? children : ""}
     >
       {children}
     </span>
-  )
+  );
 }
 
 export default function PreviousTeamsSection() {
-  const [sectionRef, visible] = useReveal()
-  const mousePos = useMouseParallax()
-  const [hoveredIdx, setHoveredIdx] = useState(null)
-  const [itemRefs] = useState(() => jobs.map(() => ({ ref: null, visible: false })))
-  const [itemVisibility, setItemVisibility] = useState(jobs.map(() => false))
+  const [sectionRef, visible] = useReveal();
+  const mousePos = useMouseParallax();
+  const [hoveredIdx, setHoveredIdx] = useState(null);
+  const [itemRefs] = useState(() =>
+    jobs.map(() => ({ ref: null, visible: false })),
+  );
+  const [itemVisibility, setItemVisibility] = useState(jobs.map(() => false));
 
   useEffect(() => {
-    const observers = []
-    document.querySelectorAll('.tl-item').forEach((el, i) => {
+    const observers = [];
+    document.querySelectorAll(".tl-item").forEach((el, i) => {
       const obs = new IntersectionObserver(
         ([entry]) => {
           if (entry.isIntersecting) {
             setTimeout(() => {
-              setItemVisibility(prev => {
-                const next = [...prev]
-                next[i] = true
-                return next
-              })
-            }, i * 120)
-            obs.disconnect()
+              setItemVisibility((prev) => {
+                const next = [...prev];
+                next[i] = true;
+                return next;
+              });
+            }, i * 120);
+            obs.disconnect();
           }
         },
-        { threshold: 0.1 }
-      )
-      obs.observe(el)
-      observers.push(obs)
-    })
-    return () => observers.forEach(o => o.disconnect())
-  }, [])
+        { threshold: 0.1 },
+      );
+      obs.observe(el);
+      observers.push(obs);
+    });
+    return () => observers.forEach((o) => o.disconnect());
+  }, []);
 
   return (
-    <section id="work" ref={sectionRef} className={`port-section${visible ? ' sec-visible' : ''}`} aria-label="Work experience">
+    <section
+      id="work"
+      ref={sectionRef}
+      className={`port-section${visible ? " sec-visible" : ""}`}
+      aria-label="Work experience"
+    >
       <SectionStyles />
       <style>{`
         @keyframes tl-glitch-clip-1 { 0%,100%{clip-path:inset(30% 0 50% 0)} 25%{clip-path:inset(10% 0 60% 0)} 50%{clip-path:inset(50% 0 20% 0)} 75%{clip-path:inset(5% 0 80% 0)} }
@@ -507,11 +540,15 @@ export default function PreviousTeamsSection() {
 
       <SectionBg mousePos={mousePos} ghostNum="03" redGlowPos="top-right" />
 
-      <div style={{ position: 'relative', zIndex: 10, maxWidth: 1080 }}>
+      <div style={{ position: "relative", zIndex: 10, maxWidth: 1080 }}>
         <div className="tl-header-fix">
           <SectionHeader
             sectorLabel="Sector 03 - Race History"
-            title={[<GlitchWord key="previous">Previous</GlitchWord>, 'Teams', '']}
+            title={[
+              <GlitchWord key="previous">Previous</GlitchWord>,
+              "Teams",
+              "",
+            ]}
             subtitle="Roles where speed, craft, and ownership were non-negotiable."
           />
         </div>
@@ -520,13 +557,15 @@ export default function PreviousTeamsSection() {
           {jobs.map((job, i) => (
             <div
               key={`${job.company}-${job.period}`}
-              className={`tl-item${itemVisibility[i] ? ' tl-item--visible' : ''}`}
+              className={`tl-item${itemVisibility[i] ? " tl-item--visible" : ""}`}
               onMouseEnter={() => setHoveredIdx(i)}
               onMouseLeave={() => setHoveredIdx(null)}
               style={{ transitionDelay: `${i * 0.06}s` }}
             >
               {/* --------- Timeline node --------- */}
-              <div className="tl-node"><div className="tl-node-inner" /></div>
+              <div className="tl-node">
+                <div className="tl-node-inner" />
+              </div>
               <div className="tl-node-pulse" />
               <div className="tl-tick" />
 
@@ -552,13 +591,20 @@ export default function PreviousTeamsSection() {
 
                 <div className="tl-pills">
                   {job.highlights.map((highlight) => (
-                    <span key={`${job.company}-${highlight}`} className="tl-pill">{highlight}</span>
+                    <span
+                      key={`${job.company}-${highlight}`}
+                      className="tl-pill"
+                    >
+                      {highlight}
+                    </span>
                   ))}
                 </div>
 
                 <div className="tl-tags">
                   {job.tech.map((tech) => (
-                    <span key={`${job.company}-${tech}`} className="tl-tag">{tech}</span>
+                    <span key={`${job.company}-${tech}`} className="tl-tag">
+                      {tech}
+                    </span>
                   ))}
                 </div>
               </a>
@@ -569,5 +615,5 @@ export default function PreviousTeamsSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }

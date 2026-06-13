@@ -835,6 +835,8 @@ export default function ContactSection() {
     };
   }, []);
 
+  //Social Links
+
   const links = [
     {
       icon: MailIcon,

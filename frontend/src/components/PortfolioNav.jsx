@@ -493,9 +493,13 @@ const styles = `
 
 const sections = ["about", "work", "tech", "projects"];
 
-export default function PortfolioNav({ scrollY: scrollYProp, onNavigate, logoImg }) {
+export default function PortfolioNav({
+  scrollY: scrollYProp,
+  onNavigate,
+  logoImg,
+}) {
   const [scrollY, setScrollY] = useState(scrollYProp ?? 0);
-  const [active, setActive]   = useState(null);
+  const [active, setActive] = useState(null);
   //const [tick, setTick]       = useState("LAP 01 · 1:23.456 · PIT WINDOW OPEN · DRS ENABLED");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [launching, setLaunching] = useState(null);
@@ -510,7 +514,8 @@ export default function PortfolioNav({ scrollY: scrollYProp, onNavigate, logoImg
   }, [scrollYProp]);
 
   // Tick telemetry string
-  {/*useEffect(() => {
+  {
+    /*useEffect(() => {
     const tickers = [
       "LAP 01 · 1:23.456 · DRS ENABLED · TYRE: SOFT",
       "SECTOR 2 · GAP +0.342 · PIT WINDOW: OPEN",
@@ -520,7 +525,8 @@ export default function PortfolioNav({ scrollY: scrollYProp, onNavigate, logoImg
     let i = 0;
     const id = setInterval(() => { i = (i + 1) % tickers.length; setTick(tickers[i]); }, 3000);
     return () => clearInterval(id);
-  }, []);*/}
+  }, []);*/
+  }
 
   useEffect(() => {
     const onResize = () => {
@@ -564,7 +570,10 @@ export default function PortfolioNav({ scrollY: scrollYProp, onNavigate, logoImg
     setActive(null);
     setIsMobileMenuOpen(false);
     const el = document.getElementById("home");
-    if (el) { navigate("home"); return; }
+    if (el) {
+      navigate("home");
+      return;
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -576,20 +585,35 @@ export default function PortfolioNav({ scrollY: scrollYProp, onNavigate, logoImg
         ref={navRef}
         className={`f1-nav${isScrolled ? " scrolled" : ""}${isMobileMenuOpen ? " mobile-open" : ""}`}
       >
-
         {/* LOGO */}
-        <a href="#home" className="nav-logo-wrap" onClick={goHome} aria-label="Go to top">
-          {logoImg
-            ? <img src={logoImg} alt="Logo" />
-            : (
-              /* Fallback SVG mark if no logoImg prop */
-              <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-                <polygon points="18,2 34,32 2,32" fill="none" stroke="#E8002D" strokeWidth="2"/>
-                <polygon points="18,10 28,28 8,28" fill="#E8002D" opacity="0.3"/>
-                <line x1="18" y1="10" x2="18" y2="26" stroke="#E8002D" strokeWidth="1.5"/>
-              </svg>
-            )
-          }
+        <a
+          href="#home"
+          className="nav-logo-wrap"
+          onClick={goHome}
+          aria-label="Go to top"
+        >
+          {logoImg ? (
+            <img src={logoImg} alt="Logo" />
+          ) : (
+            /* Fallback SVG mark if no logoImg prop */
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+              <polygon
+                points="18,2 34,32 2,32"
+                fill="none"
+                stroke="#E8002D"
+                strokeWidth="2"
+              />
+              <polygon points="18,10 28,28 8,28" fill="#E8002D" opacity="0.3" />
+              <line
+                x1="18"
+                y1="10"
+                x2="18"
+                y2="26"
+                stroke="#E8002D"
+                strokeWidth="1.5"
+              />
+            </svg>
+          )}
         </a>
 
         <div className="nav-spacer" />
@@ -611,9 +635,14 @@ export default function PortfolioNav({ scrollY: scrollYProp, onNavigate, logoImg
               <a
                 href="#"
                 className={`${active === section ? "active" : ""}${launching === section ? " launching" : ""}`}
-                onClick={(e) => { e.preventDefault(); navigate(section); }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate(section);
+                }}
               >
-                <span className="link-index">{String(i + 2).padStart(2, "0")}</span>
+                <span className="link-index">
+                  {String(i + 2).padStart(2, "0")}
+                </span>
                 {section}
               </a>
             </li>

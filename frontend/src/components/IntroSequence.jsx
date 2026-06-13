@@ -1,233 +1,246 @@
-import { useEffect, useRef, useState } from 'react'
-import { Analytics } from '@vercel/analytics/react'
-import carPhoto from '../assets/red.webp'
-import MainPortfolioPage from './MainPortfolioPage'
+import { useEffect, useRef, useState } from "react";
+import { Analytics } from "@vercel/analytics/react";
+import carPhoto from "../assets/red.webp";
+import MainPortfolioPage from "./MainPortfolioPage";
 
 const GREETINGS = [
-  'Hello',
-  'Bonjour',
-  'Ciao',
-  '你好',
-  'Olá',
-  'नमस्ते',
-  'こんにちは',
-  'Hola',
-  'Guten Tag',
-]
+  "Hello",
+  "Bonjour",
+  "Ciao",
+  "你好",
+  "Olá",
+  "नमस्ते",
+  "こんにちは",
+  "Hola",
+  "Guten Tag",
+];
 
-const FIRST_REVEAL_SYNC_MS = 100
-const FIRST_GREETING_HOLD_MS = 950
-const MIDDLE_GREETING_HOLD_MS = 200
-const FINAL_GREETING_HOLD_MS = 1100
+const FIRST_REVEAL_SYNC_MS = 100;
+const FIRST_GREETING_HOLD_MS = 950;
+const MIDDLE_GREETING_HOLD_MS = 200;
+const FINAL_GREETING_HOLD_MS = 1100;
 
 const splitGraphemes = (text) => {
-  if (typeof Intl !== 'undefined' && Intl.Segmenter) {
-    const segmenter = new Intl.Segmenter(undefined, { granularity: 'grapheme' })
-    return [...segmenter.segment(text)].map((s) => s.segment)
+  if (typeof Intl !== "undefined" && Intl.Segmenter) {
+    const segmenter = new Intl.Segmenter(undefined, {
+      granularity: "grapheme",
+    });
+    return [...segmenter.segment(text)].map((s) => s.segment);
   }
-  return Array.from(text)
-}
+  return Array.from(text);
+};
 
 export default function IntroSequence({ MainComponent = MainPortfolioPage }) {
-  const [phase, setPhase] = useState('idle')
-  const [exhaustWords, setExhaustWords] = useState([])
-  const [rpmLevel, setRpmLevel] = useState(0)
-  const [lightCount, setLightCount] = useState(0)
-  const [particles, setParticles] = useState([])
-  const [launchFlash, setLaunchFlash] = useState(false)
-  const [greetingIndex, setGreetingIndex] = useState(0)
-  const exhaustTimers = useRef([])
-  const rpmInterval = useRef(null)
-  const particleInterval = useRef(null)
+  const [phase, setPhase] = useState("idle");
+  const [exhaustWords, setExhaustWords] = useState([]);
+  const [rpmLevel, setRpmLevel] = useState(0);
+  const [lightCount, setLightCount] = useState(0);
+  const [particles, setParticles] = useState([]);
+  const [launchFlash, setLaunchFlash] = useState(false);
+  const [greetingIndex, setGreetingIndex] = useState(0);
+  const exhaustTimers = useRef([]);
+  const rpmInterval = useRef(null);
+  const particleInterval = useRef(null);
 
   // idle -> drive-in
   useEffect(() => {
-    if (phase !== 'idle') return
-    const t = setTimeout(() => setPhase('drive-in'), 300)
-    return () => clearTimeout(t)
-  }, [phase])
+    if (phase !== "idle") return;
+    const t = setTimeout(() => setPhase("drive-in"), 300);
+    return () => clearTimeout(t);
+  }, [phase]);
 
   // drive-in -> rev
   useEffect(() => {
-    if (phase !== 'drive-in') return
-    const t = setTimeout(() => setPhase('rev'), 1700)
-    return () => clearTimeout(t)
-  }, [phase])
+    if (phase !== "drive-in") return;
+    const t = setTimeout(() => setPhase("rev"), 1700);
+    return () => clearTimeout(t);
+  }, [phase]);
 
   // rev: light sequence + RPM buildup
   useEffect(() => {
-    if (phase !== 'rev') return
+    if (phase !== "rev") return;
 
-    let count = 0
+    let count = 0;
     const lightTimer = setInterval(() => {
-      count += 1
-      setLightCount(count)
-      if (count >= 5) clearInterval(lightTimer)
-    }, 200)
+      count += 1;
+      setLightCount(count);
+      if (count >= 5) clearInterval(lightTimer);
+    }, 200);
 
-    let rpm = 0
+    let rpm = 0;
     rpmInterval.current = setInterval(() => {
-      rpm = Math.min(rpm + 4, 95)
-      setRpmLevel(rpm)
-    }, 18)
+      rpm = Math.min(rpm + 4, 95);
+      setRpmLevel(rpm);
+    }, 18);
 
     const t = setTimeout(() => {
-      setPhase('launch')
-      setLaunchFlash(true)
-      setTimeout(() => setLaunchFlash(false), 300)
-      clearInterval(lightTimer)
-      clearInterval(rpmInterval.current)
-      setRpmLevel(0)
-      setLightCount(0)
-    }, 420)
+      setPhase("launch");
+      setLaunchFlash(true);
+      setTimeout(() => setLaunchFlash(false), 300);
+      clearInterval(lightTimer);
+      clearInterval(rpmInterval.current);
+      setRpmLevel(0);
+      setLightCount(0);
+    }, 420);
 
     return () => {
-      clearTimeout(t)
-      clearInterval(lightTimer)
-      clearInterval(rpmInterval.current)
-    }
-  }, [phase])
+      clearTimeout(t);
+      clearInterval(lightTimer);
+      clearInterval(rpmInterval.current);
+    };
+  }, [phase]);
 
   // Spawn particles during rev & launch
   useEffect(() => {
-    if (phase !== 'rev' && phase !== 'exhaust') {
-      setParticles([])
-      clearInterval(particleInterval.current)
-      return
+    if (phase !== "rev" && phase !== "exhaust") {
+      setParticles([]);
+      clearInterval(particleInterval.current);
+      return;
     }
 
     const spawn = () => {
-      setParticles(prev => {
-        const fresh = [...Array(phase === 'rev' ? 2 : 4)].map((_, i) => ({
+      setParticles((prev) => {
+        const fresh = [...Array(phase === "rev" ? 2 : 4)].map((_, i) => ({
           id: `p-${Date.now()}-${i}`,
           x: 48 + Math.random() * 8,
           y: 55 + Math.random() * 10,
           vx: -(1 + Math.random() * 3),
           size: 2 + Math.random() * 4,
           life: 1,
-          hue: Math.random() > 0.5 ? 'ember' : 'spark',
-        }))
-        return [...prev.slice(-40), ...fresh]
-      })
-    }
+          hue: Math.random() > 0.5 ? "ember" : "spark",
+        }));
+        return [...prev.slice(-40), ...fresh];
+      });
+    };
 
-    particleInterval.current = setInterval(spawn, 60)
-    return () => clearInterval(particleInterval.current)
-  }, [phase])
+    particleInterval.current = setInterval(spawn, 60);
+    return () => clearInterval(particleInterval.current);
+  }, [phase]);
 
   // Animate particles
   useEffect(() => {
-    if (particles.length === 0) return
+    if (particles.length === 0) return;
     const raf = requestAnimationFrame(() => {
-      setParticles(prev =>
+      setParticles((prev) =>
         prev
-          .map(p => ({ ...p, x: p.x + p.vx * 0.4, y: p.y + 0.2, life: p.life - 0.035 }))
-          .filter(p => p.life > 0)
-      )
-    })
-    return () => cancelAnimationFrame(raf)
-  }, [particles])
+          .map((p) => ({
+            ...p,
+            x: p.x + p.vx * 0.4,
+            y: p.y + 0.2,
+            life: p.life - 0.035,
+          }))
+          .filter((p) => p.life > 0),
+      );
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [particles]);
 
   // launch -> exhaust
   useEffect(() => {
-    if (phase !== 'launch') return
+    if (phase !== "launch") return;
 
     const t = setTimeout(() => {
-      setPhase('exhaust')
-      setGreetingIndex(0)
+      setPhase("exhaust");
+      setGreetingIndex(0);
       setExhaustWords([
         {
           id: `0-${Date.now()}`,
           word: GREETINGS[0],
-          mode: 'reveal',
+          mode: "reveal",
           style: {
-            left: '50%',
-            top: '50%',
-            fontSize: 'clamp(2.8rem, 7vw, 4.2rem)',
-            '--settle-x': '-50%',
-            '--settle-y': '-50%',
-            '--hold-dur': '0.5s',
-            '--char-step': '80ms',
-            '--char-duration': '360ms',
-            '--char-start-delay': '20ms',
+            left: "50%",
+            top: "50%",
+            fontSize: "clamp(2.8rem, 7vw, 4.2rem)",
+            "--settle-x": "-50%",
+            "--settle-y": "-50%",
+            "--hold-dur": "0.5s",
+            "--char-step": "80ms",
+            "--char-duration": "360ms",
+            "--char-start-delay": "20ms",
           },
         },
-      ])
-    }, 0)
+      ]);
+    }, 0);
 
-    exhaustTimers.current.push(t)
+    exhaustTimers.current.push(t);
     return () => {
-      exhaustTimers.current.forEach(clearTimeout)
-      exhaustTimers.current = []
-    }
-  }, [phase])
+      exhaustTimers.current.forEach(clearTimeout);
+      exhaustTimers.current = [];
+    };
+  }, [phase]);
 
   // cycle greetings
   useEffect(() => {
-    if (phase !== 'exhaust') return
+    if (phase !== "exhaust") return;
 
     const makeWord = (index) => ({
       id: `${index}-${Date.now()}`,
       word: GREETINGS[index % GREETINGS.length],
-      mode: 'hold',
+      mode: "hold",
       style: {
-        left: '50%',
-        top: '50%',
-        fontSize: 'clamp(2.8rem, 7vw, 4.2rem)',
-        '--settle-x': '-50%',
-        '--settle-y': '-50%',
-        '--hold-dur': '0.5s',
+        left: "50%",
+        top: "50%",
+        fontSize: "clamp(2.8rem, 7vw, 4.2rem)",
+        "--settle-x": "-50%",
+        "--settle-y": "-50%",
+        "--hold-dur": "0.5s",
       },
-    })
+    });
 
-    let idx = 0
-    let isCancelled = false
-    const sequenceTimers = []
+    let idx = 0;
+    let isCancelled = false;
+    const sequenceTimers = [];
 
     const queue = (delay, fn) => {
-      const t = setTimeout(fn, delay)
-      sequenceTimers.push(t)
-    }
+      const t = setTimeout(fn, delay);
+      sequenceTimers.push(t);
+    };
 
     const advanceGreeting = () => {
-      if (isCancelled) return
-      idx += 1
-      setGreetingIndex(idx)
+      if (isCancelled) return;
+      idx += 1;
+      setGreetingIndex(idx);
       if (idx >= GREETINGS.length) {
-        setPhase('main')
-        return
+        setPhase("main");
+        return;
       }
-      setExhaustWords([makeWord(idx)])
-      const isFinal = idx === GREETINGS.length - 1
-      queue(isFinal ? FINAL_GREETING_HOLD_MS : MIDDLE_GREETING_HOLD_MS, advanceGreeting)
-    }
+      setExhaustWords([makeWord(idx)]);
+      const isFinal = idx === GREETINGS.length - 1;
+      queue(
+        isFinal ? FINAL_GREETING_HOLD_MS : MIDDLE_GREETING_HOLD_MS,
+        advanceGreeting,
+      );
+    };
 
-    queue(FIRST_REVEAL_SYNC_MS + FIRST_GREETING_HOLD_MS, advanceGreeting)
+    queue(FIRST_REVEAL_SYNC_MS + FIRST_GREETING_HOLD_MS, advanceGreeting);
 
     return () => {
-      isCancelled = true
-      sequenceTimers.forEach(clearTimeout)
-      setExhaustWords([])
-    }
-  }, [phase])
+      isCancelled = true;
+      sequenceTimers.forEach(clearTimeout);
+      setExhaustWords([]);
+    };
+  }, [phase]);
 
-  if (phase === 'main') {
-    return <MainComponent />
+  if (phase === "main") {
+    return <MainComponent />;
   }
 
-  const isActive = phase !== 'idle'
-  const isLaunch = phase === 'launch' || phase === 'exhaust'
-  const isRev = phase === 'rev'
-  const isDriveIn = phase === 'drive-in'
+  const isActive = phase !== "idle";
+  const isLaunch = phase === "launch" || phase === "exhaust";
+  const isRev = phase === "rev";
+  const isDriveIn = phase === "drive-in";
 
   const carClass =
-    phase === 'idle' ? 'idle'
-    : phase === 'drive-in' ? 'drive-in'
-    : phase === 'rev' ? 'rev'
-    : 'launch'
+    phase === "idle"
+      ? "idle"
+      : phase === "drive-in"
+        ? "drive-in"
+        : phase === "rev"
+          ? "rev"
+          : "launch";
 
-  const signalState = isLaunch ? 'green' : isRev ? 'blink' : 'red'
-  const progress = (greetingIndex / (GREETINGS.length - 1)) * 100
+  const signalState = isLaunch ? "green" : isRev ? "blink" : "red";
+  const progress = (greetingIndex / (GREETINGS.length - 1)) * 100;
 
   return (
     <>
