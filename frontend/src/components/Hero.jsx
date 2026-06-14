@@ -1059,12 +1059,12 @@ export default function Hero({ onViewWork, onContact, resumeLink = "#" }) {
             <TypewriterRole roles={ROLES} />
           </div>
 
-          {/* Red accent line */}
+          {/* --------- Red accent line --------- */}
           <div className="hd2">
             <RedLineAccent width={isMobile ? 140 : 260} />
           </div>
 
-          {/* Name — letter-by-letter drop */}
+          {/* --------- Name — letter-by-letter drop --------- */}
           <h1
             className="hd2 hero-title-gap"
             style={{
@@ -1117,7 +1117,7 @@ export default function Hero({ onViewWork, onContact, resumeLink = "#" }) {
                   {c}
                 </span>
               ))}
-              {/* Underline */}
+              {/* --------- Underline --------- */}
               <span
                 style={{
                   position: "absolute",
@@ -1135,7 +1135,7 @@ export default function Hero({ onViewWork, onContact, resumeLink = "#" }) {
             </span>
           </h1>
 
-          {/* Telemetry row */}
+          {/* ---------Telemetry row --------- */}
           <div
             className="hd3"
             style={{
@@ -1148,7 +1148,7 @@ export default function Hero({ onViewWork, onContact, resumeLink = "#" }) {
               position: "relative",
             }}
           >
-            {/* Animated bottom rule */}
+            {/* --------- Animated bottom rule ---------*/}
             <div
               style={{
                 position: "absolute",
@@ -1215,7 +1215,7 @@ export default function Hero({ onViewWork, onContact, resumeLink = "#" }) {
             ))}
           </div>
 
-          {/* Bottom row */}
+          {/* --------- Bottom row --------- */}
           <div
             className="hd5 hero-bottom-row"
             style={{
@@ -1254,7 +1254,7 @@ export default function Hero({ onViewWork, onContact, resumeLink = "#" }) {
               millisecond matters.
             </p>
 
-            {/* Buttons */}
+            {/* --------- Buttons --------- */}
             <div
               className="hero-btn-row"
               style={{

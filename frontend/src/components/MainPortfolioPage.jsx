@@ -813,10 +813,10 @@ export default function MainPortfolioPage({
           </div>
         )}
 
-        {/* NAV */}
+        {/* --------- NAV --------- */}
         {renderNav?.({ scrollY, onNavigate: go })}
 
-        {/* HERO */}
+        {/* --------- HERO --------- */}
         {renderHero?.({
           onViewWork: () => go("projects"),
           onContact: () => go("contact"),
@@ -826,22 +826,22 @@ export default function MainPortfolioPage({
         <div className="divider-red" />
         <div className="divider" />
 
-        {/* ABOUT */}
+        {/* --------- ABOUT --------- */}
         {aboutSection}
 
         <div className="divider" />
 
-        {/* WORK TIMELINE */}
+        {/* --------- WORK TIMELINE --------- */}
         {workTimelineSection}
 
         <div className="divider" />
 
-        {/* TECH STACK */}
+        {/* --------- TECH STACK --------- */}
         {techStackSection}
 
         <div className="divider" />
 
-        {/* PROJECTS */}
+        {/* --------- PROJECTS --------- */}
         {projectsSection}
 
         <div className="divider" />

@@ -121,7 +121,7 @@ function GlitchWord({ children }) {
   );
 }
 
-/* ── Regular card ────────────────────────────────────────────── */
+/* --------- Regular card --------- */
 function ProjectCard({ project, index }) {
   const { ref, handleMove, handleLeave } = useTilt(8);
   const [cardVisible, setCardVisible] = useState(false);

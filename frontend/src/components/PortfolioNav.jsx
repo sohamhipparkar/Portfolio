@@ -513,7 +513,7 @@ export default function PortfolioNav({
     return () => window.removeEventListener("scroll", onScroll);
   }, [scrollYProp]);
 
-  // Tick telemetry string
+  // --------- Tick telemetry string ---------
   {
     /*useEffect(() => {
     const tickers = [
